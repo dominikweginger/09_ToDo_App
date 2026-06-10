@@ -2,93 +2,30 @@
 
 ## Ziel
 
-Dieses Dokument beschreibt Datenmodell, lokale Speicherung und Import-/Export-Struktur für SoloTodo PWA.
+Dieses Dokument beschreibt Datenmodell, lokale Speicherung und Backup-Schema fuer SoloTodo V2.
 
 ## Datenquelle
 
-Primäre Datenquelle:
+Primaere Datenquelle:
 - Nutzereingaben in der App
 
-Sekundäre Datenquellen:
+Sekundaere Datenquelle:
 - JSON-Backup-Import
-- später optional CSV-Import
 
-Es gibt keine Serverdatenbank und keine externe Synchronisierung.
+Es gibt keine Serverdatenbank, kein Backend und keine externe Synchronisierung.
 
 ## Speicherort
 
-Die Daten werden lokal im Browserkontext gespeichert.
+Die Daten werden lokal im Browserkontext in IndexedDB gespeichert.
 
-Empfohlen:
-- IndexedDB
+## IndexedDB
 
-Offene Entscheidung:
-- IndexedDB direkt verwenden oder Dexie.js als Wrapper nutzen.
+- Datenbank: `solotodo-db`
+- Version: `2`
+- Store `tasks`
+- Store `lists`
 
-## Entität: Task
-
-```json
-{
-  "id": "string",
-  "title": "string",
-  "description": "string | null",
-  "status": "open | done | archived",
-  "dueDate": "YYYY-MM-DD | null",
-  "dueTime": "HH:mm | null",
-  "priority": "none | low | medium | high",
-  "categoryId": "string | null",
-  "tags": ["string"],
-  "isRecurring": false,
-  "recurrenceRule": "string | null",
-  "createdAt": "ISO datetime",
-  "updatedAt": "ISO datetime",
-  "completedAt": "ISO datetime | null"
-}
-```
-
-## Pflichtfelder
-
-- `id`
-- `title`
-- `status`
-- `priority`
-- `createdAt`
-- `updatedAt`
-
-## Statuswerte
-
-```text
-open
-done
-archived
-```
-
-## Prioritätswerte
-
-```text
-none
-low
-medium
-high
-```
-
-## Datumslogik
-
-- `dueDate = null`: Aufgabe erscheint in Inbox.
-- `dueDate = heute`: Aufgabe erscheint in Heute.
-- `dueDate < heute` und `status = open`: Aufgabe ist überfällig.
-- `dueDate = ausgewähltes Kalenderdatum`: Aufgabe erscheint in Tagesliste.
-
-## Uhrzeitlogik
-
-- `dueTime` ist optional.
-- Eine Aufgabe mit Datum kann ohne Uhrzeit existieren.
-- Uhrzeit dient im MVP nur zur Anzeige und Sortierung.
-- Erinnerungen sind nicht Teil des MVP.
-
-## Entität: Category
-
-Kategorien sind Soll-Funktion, aber das Datenmodell kann vorbereitet werden.
+## Entity: TodoList
 
 ```json
 {
@@ -100,40 +37,78 @@ Kategorien sind Soll-Funktion, aber das Datenmodell kann vorbereitet werden.
 }
 ```
 
-## Backup-Format
+Default:
+- `id = "default-list"`
+- `name = "Allgemein"`
+- wird automatisch sichergestellt
+- kann nicht geloescht werden
+
+## Entity: Task
 
 ```json
 {
-  "schemaVersion": 1,
+  "id": "string",
+  "title": "string",
+  "description": "string | null",
+  "status": "open | done | archived",
+  "listId": "string",
+  "dueDate": "YYYY-MM-DD | null",
+  "dueTime": "HH:mm | null",
+  "priority": "none | low | medium | high",
+  "isFlagged": "boolean",
+  "recurrence": "TaskRecurrence | null",
+  "sortOrder": "number",
+  "createdAt": "ISO datetime",
+  "updatedAt": "ISO datetime",
+  "completedAt": "ISO datetime | null"
+}
+```
+
+## Entity: TaskRecurrence
+
+```json
+{
+  "enabled": true,
+  "frequency": "daily | weekly | monthly | yearly",
+  "interval": 1,
+  "endDate": "YYYY-MM-DD | null",
+  "advanceMode": "scheduledDate"
+}
+```
+
+## Regeln
+
+- Jede Aufgabe hat genau eine `listId`.
+- Aufgaben ohne explizite Liste fallen auf `Allgemein`.
+- Smart Views besitzen keine Aufgaben.
+- `priority: high` bedeutet Dringend.
+- `isFlagged: true` bedeutet Markiert.
+- Wiederholungen erzeugen keine neue Aufgabe.
+- Beim Abhaken einer wiederkehrenden Aufgabe wird `dueDate` auf das naechste Datum gesetzt und `status` bleibt `open`.
+
+## Backup-Format v2
+
+```json
+{
+  "schemaVersion": 2,
   "exportedAt": "ISO datetime",
   "tasks": [],
-  "categories": []
+  "lists": []
 }
 ```
 
 ## Export-Regeln
 
-- Export enthält alle lokalen Aufgaben.
-- Export enthält Schema-Version.
-- Export enthält Exportzeitpunkt.
+- Export enthaelt alle lokalen Aufgaben und Listen.
+- Export enthaelt Schema-Version 2.
+- Export enthaelt Exportzeitpunkt.
 - Export erzeugt eine herunterladbare JSON-Datei.
 
 ## Import-Regeln
 
-Import muss prüfen:
-
-- Datei ist gültiges JSON.
-- `schemaVersion` ist vorhanden.
-- `tasks` ist vorhanden und Array.
-- Task-Felder sind plausibel.
-- ungültige Daten werden abgefangen.
-
-Offene Entscheidung:
-- Import ersetzt vorhandene Daten oder führt Daten zusammen.
-
-## Datenmigration
-
-Bei späteren Schemaänderungen muss eine Migration ergänzt werden.
-
-MVP:
-- `schemaVersion = 1`
+- Datei muss gueltiges JSON sein.
+- `schemaVersion` muss `2` sein.
+- `tasks` und `lists` muessen Arrays sein.
+- Jede Aufgabe muss eine gueltige `listId` haben.
+- `Allgemein` wird sichergestellt.
+- Import ersetzt lokale Daten erst nach Bestaetigung.

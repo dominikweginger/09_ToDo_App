@@ -119,7 +119,9 @@ button {
 }
 
 .task-list,
-.settings-list {
+.settings-list,
+.list-stack,
+.calendar-panel {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -127,6 +129,8 @@ button {
 
 .task-card,
 .settings-row,
+.section-block,
+.list-row,
 .app-info,
 .overview-block,
 .empty-state {
@@ -138,9 +142,15 @@ button {
 
 .task-card {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr);
   gap: 10px;
   padding: 12px;
+}
+
+.card-actions {
+  grid-column: 2;
+  justify-content: flex-start;
+  flex-wrap: wrap;
 }
 
 .task-card-done {
@@ -173,7 +183,8 @@ button {
 }
 
 .task-meta,
-.note-marker {
+.note-marker,
+.task-badges {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -185,10 +196,17 @@ button {
 }
 
 .task-meta span,
-.note-marker {
+.note-marker,
+.task-badges span {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+.task-badges {
+  margin-top: 6px;
+  color: #475569;
+  font-size: 0.78rem;
 }
 
 .task-meta strong {
@@ -434,6 +452,187 @@ button {
   display: none;
 }
 
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dashboard-tile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+  min-height: 108px;
+  border: 1px solid #dbe3ee;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+  color: #172033;
+  text-align: left;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.dashboard-tile strong {
+  grid-column: 1 / -1;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.tile-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #edf2f7;
+  color: #2563eb;
+}
+
+.section-block {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.section-head span {
+  color: #64748b;
+  font-weight: 800;
+}
+
+.list-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+}
+
+.list-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 46px;
+  border: 0;
+  background: transparent;
+  color: #172033;
+  text-align: left;
+  font-weight: 800;
+}
+
+.list-main span:nth-child(2) {
+  overflow-wrap: anywhere;
+}
+
+.list-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.list-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  padding: 4px;
+  background: #eef2f7;
+}
+
+.segmented-control button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #475569;
+  font-weight: 800;
+}
+
+.segmented-control .segment-active {
+  background: #fff;
+  color: #172033;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.quick-actions button {
+  min-height: 36px;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  padding: 0 10px;
+  font-weight: 800;
+}
+
+.check-row {
+  grid-template-columns: auto 1fr !important;
+  align-items: center;
+}
+
+.check-row input {
+  width: 20px;
+  min-height: 20px;
+}
+
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.week-day {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  min-height: 72px;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #fff;
+  color: #334155;
+  padding: 7px 4px;
+}
+
+.week-day span,
+.week-day small {
+  font-size: 0.68rem;
+}
+
+.week-day strong {
+  font-size: 1rem;
+}
+
+.week-day.selected {
+  color: #fff;
+  border-color: #2563eb;
+  background: #2563eb;
+}
+
 @media (min-width: 560px) {
   .app-shell {
     padding-inline: 24px;
@@ -445,5 +644,13 @@ button {
 
   .task-form {
     margin-bottom: 22px;
+  }
+
+  .task-card {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+  }
+
+  .card-actions {
+    grid-column: auto;
   }
 }

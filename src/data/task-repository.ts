@@ -5,6 +5,12 @@ export async function getAllTasks(): Promise<StoredTask[]> {
   return requestToPromise(store.getAll());
 }
 
+export async function deleteTasksByListId(listId: string): Promise<void> {
+  const tasks = await getAllTasks();
+  const store = await getTaskStore('readwrite');
+  await Promise.all(tasks.filter((task) => task.listId === listId).map((task) => requestToPromise(store.delete(task.id))));
+}
+
 export async function saveTask(task: StoredTask): Promise<void> {
   const store = await getTaskStore('readwrite');
   await requestToPromise(store.put(task));

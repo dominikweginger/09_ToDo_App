@@ -7,19 +7,19 @@
 Entscheidung:
 - Progressive Web App
 
-Begründung:
-- mobile Nutzung möglich
-- installierbar bzw. zum Startbildschirm hinzufügbar
-- offlinefähig
+Begruendung:
+- mobile Nutzung moeglich
+- installierbar bzw. zum Startbildschirm hinzufuegbar
+- offlinefaehig
 - kein App Store notwendig
 - pragmatisch als statische Web-App umsetzbar
 
-### 2. Zielgerät
+### 2. Zielgeraet
 
 Entscheidung:
-- Smartphone als primäres Zielgerät
+- Smartphone als primaeres Zielgeraet
 
-Begründung:
+Begruendung:
 - Nutzung soll unterwegs und schnell erfolgen.
 - Desktop ist nicht Hauptziel.
 
@@ -28,93 +28,121 @@ Begründung:
 Entscheidung:
 - Einzelner Nutzer
 
-Begründung:
-- App ist nur für persönliche Aufgaben gedacht.
-- Keine Team- oder Freigabefunktionen nötig.
+Begruendung:
+- App ist nur fuer persoenliche Aufgaben gedacht.
+- Keine Team- oder Freigabefunktionen noetig.
 
 ### 4. Speicherung
 
 Entscheidung:
-- lokale Speicherung
+- lokale Speicherung in IndexedDB
 
-Begründung:
+Begruendung:
 - keine Cloud notwendig
-- offlinefähig
+- offlinefaehig
 - private Nutzung
-- weniger technische Komplexität
+- weniger technische Komplexitaet
 
-### 5. Kein Backend
-
-Entscheidung:
-- MVP ohne Server, API oder Backend
-
-Begründung:
-- keine Synchronisierung geplant
-- weniger Wartung
-- schnellerer MVP
-
-### 6. Kein Login
+### 5. Kein Backend und kein Login
 
 Entscheidung:
-- keine Benutzerkonten im MVP
+- keine Server, APIs oder Benutzerkonten
 
-Begründung:
+Begruendung:
 - nur ein Nutzer
 - lokale Datenhaltung
-- Login wäre unnötige Komplexität
+- Login und Backend waeren unnoetige Komplexitaet
 
-### 7. Backup
-
-Entscheidung:
-- JSON-Export und JSON-Import sind MVP-Bestandteil
-
-Begründung:
-- lokale Daten können verloren gehen
-- Backup ist ohne Cloud wichtig
-
-### 8. Frontend-Stack
+### 6. Frontend-Stack
 
 Entscheidung:
 - React + Vite + TypeScript
 
-Begründung:
-- bildet die dokumentierte Modultrennung sauber ab
+Begruendung:
+- bildet die Modultrennung sauber ab
 - bleibt als statische PWA ohne Backend deploybar
-- TypeScript reduziert Fehler im Task-Modell und bei Import/Export
+- TypeScript reduziert Fehler im Aufgaben- und Backup-Modell
 
-### 9. IndexedDB-Zugriff
+### 7. IndexedDB-Zugriff
 
 Entscheidung:
 - IndexedDB direkt, ohne Dexie.js
 
-Begründung:
-- erfüllt die lokale Persistenzanforderung
-- vermeidet eine zusätzliche Datenbibliothek im MVP
-- hält die Architektur klein und nachvollziehbar
+Begruendung:
+- erfuellt die lokale Persistenzanforderung
+- vermeidet eine zusaetzliche Datenbibliothek
+- haelt die Architektur klein und nachvollziehbar
 
-### 10. Importlogik MVP
+### 8. CR_001 Navigation und Produktstruktur
 
 Entscheidung:
-- JSON-Import ersetzt bestehende Aufgaben erst nach expliziter Bestätigung.
+- Hauptnavigation ist `Dashboard | Geplant | Listen | Mehr`.
+- `Inbox` ist keine Hauptnavigation mehr.
 
-Begründung:
-- schützt vor stillschweigender Datenzerstörung
-- ist einfacher prüfbar als Merge-Logik
-- erfüllt die Backup-Anforderung des MVP ohne Konfliktregeln vorzuziehen
+Begruendung:
+- CR_001 definiert Dashboard, zeitliche Planung und Listen als neue Produktstruktur.
+- Aufgaben ohne Datum sind normale Listenaufgaben und benoetigen keine eigene Hauptansicht.
+
+### 9. Default-Liste
+
+Entscheidung:
+- `Allgemein` ist fix vorhanden und nicht loeschbar.
+- `Allgemein` wird nicht umbenannt.
+
+Begruendung:
+- vereinfacht Datenintegritaet und Importlogik
+- stellt sicher, dass jede Aufgabe eine gueltige Liste hat
+- vermeidet unnoetige UI- und Migrationskomplexitaet
+
+### 10. Importlogik und Backup-Schema
+
+Entscheidung:
+- Backup-Schema ist Version 2 und enthaelt `tasks` und `lists`.
+- Import ersetzt lokale Aufgaben und Listen erst nach expliziter Bestaetigung.
+- v1-Backups werden nicht defensiv importiert.
+
+Begruendung:
+- CR_001 verlangt Schema-Version 2.
+- Es gibt laut CR keine relevanten alten Daten, daher ist keine komplexe Migration erforderlich.
+- Ersetzen ist einfacher pruefbar als Merge-Logik.
+
+### 11. Manuelle Sortierung
+
+Entscheidung:
+- Manuelle Sortierung wird minimal ueber Hoch-/Runter-Buttons umgesetzt.
+
+Begruendung:
+- erfuellt das `sortOrder`-Kriterium ohne Drag & Drop
+- bleibt mobile-first und risikoarm
+
+### 12. Wiederholungen
+
+Entscheidung:
+- Wiederkehrende Aufgaben werden beim Abhaken nicht erledigt, sondern auf das naechste Faelligkeitsdatum verschoben.
+
+Begruendung:
+- entspricht Variante A aus CR_001
+- vermeidet Instanzduplikate und komplexe RRULE-Logik
+
+### 13. Kalenderintegration
+
+Entscheidung:
+- Die bestehende Kalenderansicht bleibt erhalten und ist als Segment in `Geplant` integriert.
+
+Begruendung:
+- erfuellt CR_001 ohne zusaetzliche Hauptnavigation
+- haelt zeitliche Planung an einem Ort
 
 ## Offene Entscheidungen
 
-1. Finaler Projektname
-2. Kategorien im MVP oder erst nach MVP
-3. Wiederkehrende Aufgaben im MVP oder erst Version 2
-4. lokale Erinnerungen später ja/nein
-5. PIN-Sperre später ja/nein
-6. Hosting-Ziel der PWA
-7. Mindest-Browser-/Android-Version
+1. Hosting-Ziel der PWA
+2. Mindest-Browser-/Android-Version
+3. lokale Erinnerungen spaeter ja/nein
+4. PIN-Sperre spaeter ja/nein
 
 ## Bewusst verworfene oder verschobene Ideen
 
-Nicht im MVP:
+Nicht in CR_001:
 - native Android-App
 - iOS-App
 - Cloud-Sync
@@ -125,12 +153,5 @@ Nicht im MVP:
 - KI-Funktionen
 - lokale Benachrichtigungen
 - CSV-Import/Export
-
-## Entscheidungsregel
-
-Neue Funktionen dürfen nur ergänzt werden, wenn sie:
-
-- nicht gegen Nicht-Ziele verstoßen
-- den MVP nicht destabilisieren
-- in PRD und Technical Spec nachgezogen werden
-- in Tests berücksichtigt werden
+- Suche
+- Dark Mode

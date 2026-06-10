@@ -2,130 +2,81 @@
 
 ## Produktname
 
-Arbeitstitel: **SoloTodo PWA**
-
-Offene Entscheidung: Finaler App-Name.
+SoloTodo PWA
 
 ## Produktbeschreibung
 
-SoloTodo PWA ist eine persönliche To-Do-App für die mobile Nutzung. Sie kombiniert schnelle Aufgabenverwaltung mit einer einfachen Kalenderlogik. Die App funktioniert offline, speichert lokal und verzichtet bewusst auf Login, Cloud-Sync, Teamfunktionen und Backend.
+SoloTodo PWA ist eine private, lokal speichernde und offlinefaehige Aufgaben-Zentrale fuer eine einzelne Person. Version 2 strukturiert die App um Dashboard, zeitliche Planung, echte Listen und berechnete Smart Views.
 
 ## Zielnutzer
 
-Ein einzelner Nutzer, der Aufgaben am Smartphone erfassen, planen und erledigen möchte.
+Ein einzelner Nutzer, der Aufgaben am Smartphone schnell erfassen, in Listen ordnen, zeitlich planen und lokal sichern moechte.
 
-Typische Nutzung:
-- morgens die Heute-Ansicht prüfen
-- unterwegs schnell Aufgaben erfassen
-- Aufgaben später aus der Inbox terminieren
-- Aufgaben im Kalender pro Tag sehen
-- erledigte Aufgaben abhaken
-- Daten bei Bedarf als JSON sichern
+## Produktziel CR_001
 
-## Kernproblem
+SoloTodo soll als neutrale, moderne "Apple Reminders light"-PWA funktionieren, ohne ein iOS-Klon zu sein. Die App bleibt lokal, offlinefaehig und backendlos.
 
-Bestehende To-Do-Apps sind für diesen Anwendungsfall oft zu umfangreich, cloudabhängig oder auf Teams und mehrere Plattformen ausgelegt. Gesucht wird eine einfache, private und offlinefähige Lösung.
+## Kernfunktionen
 
-## Produktziel
+- Dashboard als Startscreen
+- Smart-View-Kacheln: Heute, Geplant, Diese Woche, Naechste Woche, Markiert, Dringend
+- echte Listen als Aufgabencontainer
+- Default-Liste `Allgemein`
+- Aufgaben liegen genau in einer Liste
+- Geplant-Ansicht mit gruppierter Liste, Wochenuebersicht Montag bis Sonntag und Kalender
+- bestehende Kalenderfunktion bleibt erhalten
+- Aufgabe erstellen, bearbeiten, loeschen, abhaken und wieder oeffnen
+- Markierung per `isFlagged`
+- `priority: high` gilt als Dringend
+- einfache Wiederholungen ohne RRULE
+- manuelle Sortierung ueber `sortOrder`
+- Backup-Export und Import mit Schema-Version 2
 
-Die App soll eine zuverlässige persönliche Aufgaben-Zentrale sein. Sie soll schnell bedienbar, verständlich und stabil sein. Funktionsumfang ist zweitrangig gegenüber Alltagstauglichkeit.
-
-## MVP-Muss-Funktionen
-
-### Aufgabenverwaltung
-
-- Aufgabe erstellen
-- Aufgabe bearbeiten
-- Aufgabe löschen
-- Aufgabe als erledigt markieren
-- erledigte Aufgabe wieder öffnen
-- Status dauerhaft speichern
-
-### Aufgabenfelder
+## Aufgabenfelder
 
 - Titel
+- Notiz
+- Liste
+- Datum
+- Uhrzeit
+- Prioritaet
+- Markiert
+- Wiederholung
 - Status
-- Erstellungsdatum
-- optionales Fälligkeitsdatum
-- optionale Uhrzeit
-- optionale Notiz
-- optionale Priorität
-
-### Ansichten
-
-- Heute-Ansicht
-- Kalenderansicht
-- Inbox für Aufgaben ohne Datum
-- einfache Gesamtübersicht oder Suche
-- Mehr/Einstellungen für Backup und spätere Optionen
-
-### Kalenderfunktionen
-
-- Aufgabe einem Datum zuweisen
-- Tagesliste für ausgewählten Kalendertag anzeigen
-- Aufgabe auf anderes Datum verschieben
-- Aufgaben ohne Datum separat anzeigen
-
-### Offline und lokale Daten
-
-- App funktioniert nach erstem Laden offline
-- Aufgaben können offline erstellt, bearbeitet und erledigt werden
-- Daten werden lokal gespeichert
-- kein Login
-- kein Backend
-- keine externe Synchronisierung
-
-### Backup
-
-- JSON-Export aller lokalen Daten
-- JSON-Import aus Backup-Datei
-- Import schützt vor unbeabsichtigtem Datenverlust
-
-## Soll-Funktionen
-
-- Kategorien oder Listen
-- Filter nach offen, erledigt, überfällig
-- Prioritätsfilter
-- Wiederkehrende Aufgaben
-- Dark Mode
-- einfache Einstellungen
-- Bestätigungsdialog vor dauerhaftem Löschen
-- Anzeige überfälliger Aufgaben in der Heute-Ansicht
-
-## Kann-Funktionen
-
-- lokale Erinnerungen
-- Statistiken
-- CSV-Export
-- CSV-Import
-- App-Icon und Splashscreen
-- PIN-Sperre
-- Schnellaktionen wie Morgen, Nächste Woche, Ohne Datum
-- automatische Backup-Erinnerung
-- KI-gestützte Aufgabenplanung
 
 ## Nicht-Ziele
 
-- kein Benutzerkonto
+- kein Backend
+- kein Login
 - keine Cloud-Synchronisierung
+- keine externe Kalenderintegration
+- keine Push Notifications
+- keine natuerliche Spracheingabe
+- keine KI-Funktionen
 - keine Teamfunktionen
-- keine Freigabe an andere Nutzer
-- keine native Android-App im ersten Schritt
-- keine iOS-spezifische Entwicklung
-- keine Projektmanagement-App
-- kein Kanban-Board im MVP
-- keine Server-Infrastruktur
-- keine Google-/Outlook-/Todoist-Synchronisierung
+- keine geteilten Listen
+- keine Anhaenge
+- keine Subtasks
+- kein Kanban
+- kein Habit Tracker
+- kein Pomodoro
+- kein Dark Mode
+- kein App-Icon-Redesign
+- keine native Android- oder iOS-App
+- keine komplexen RRULE-Wiederholungen
+- keine Tags/Labels im UI
+- keine Suche in dieser Version
 
-## Akzeptanzkriterien MVP
+## Akzeptanzkriterien
 
-Der MVP ist fachlich akzeptiert, wenn:
-
-- Aufgaben lassen sich vollständig verwalten.
-- Heute zeigt heutige und überfällige offene Aufgaben.
-- Kalender zeigt Aufgaben am korrekten Datum.
-- Inbox zeigt Aufgaben ohne Datum.
-- lokale Daten bleiben nach Neustart erhalten.
-- App ist nach erstem Laden offline nutzbar.
-- JSON-Export und Import funktionieren.
-- keine Cloud-, Login- oder Backend-Abhängigkeit existiert.
+- Die Hauptnavigation lautet `Dashboard | Geplant | Listen | Mehr`.
+- Die App startet auf dem Dashboard.
+- Die alte Inbox ist nicht mehr Teil der Hauptnavigation.
+- Jede Aufgabe hat eine gueltige `listId`.
+- `Allgemein` existiert automatisch und kann nicht geloescht werden.
+- Listen koennen erstellt, umbenannt und geloescht werden.
+- Beim Loeschen einer nicht leeren Liste wird die Anzahl betroffener Aufgaben bestaetigt.
+- Smart Views zeigen nur offene, nicht archivierte Aufgaben.
+- Wiederkehrende Aufgaben bleiben beim Abhaken offen und erhalten das naechste Faelligkeitsdatum.
+- Backup v2 enthaelt Tasks und Listen.
+- Keine Cloud-, Login- oder Backend-Abhaengigkeit existiert.

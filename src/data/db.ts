@@ -1,8 +1,10 @@
 import { Task } from '../domain/task-model';
+import { TodoList } from '../domain/list-model';
 
 const DB_NAME = 'solotodo-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const TASK_STORE = 'tasks';
+const LIST_STORE = 'lists';
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -18,6 +20,14 @@ export function openDatabase(): Promise<IDBDatabase> {
         const store = db.createObjectStore(TASK_STORE, { keyPath: 'id' });
         store.createIndex('dueDate', 'dueDate', { unique: false });
         store.createIndex('status', 'status', { unique: false });
+        store.createIndex('listId', 'listId', { unique: false });
+      } else {
+        const transaction = request.transaction;
+        const store = transaction?.objectStore(TASK_STORE);
+        if (store && !store.indexNames.contains('listId')) store.createIndex('listId', 'listId', { unique: false });
+      }
+      if (!db.objectStoreNames.contains(LIST_STORE)) {
+        db.createObjectStore(LIST_STORE, { keyPath: 'id' });
       }
     };
 
@@ -33,6 +43,11 @@ export async function getTaskStore(mode: IDBTransactionMode): Promise<IDBObjectS
   return db.transaction(TASK_STORE, mode).objectStore(TASK_STORE);
 }
 
+export async function getListStore(mode: IDBTransactionMode): Promise<IDBObjectStore> {
+  const db = await openDatabase();
+  return db.transaction(LIST_STORE, mode).objectStore(LIST_STORE);
+}
+
 export function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
@@ -41,3 +56,4 @@ export function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
 }
 
 export type StoredTask = Task;
+export type StoredList = TodoList;

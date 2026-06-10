@@ -2,14 +2,14 @@
 
 ## Zweck
 
-Dieses Dokument enthält direkt nutzbare Prompts für Codex, um das Projekt strukturiert umzusetzen, zu prüfen und zu erweitern.
+Dieses Dokument enthaelt nutzbare Prompts fuer Codex, um SoloTodo V2 zu pruefen und in spaeteren Changes kontrolliert weiterzuentwickeln.
 
-## Prompt 1: Projekt prüfen
+## Prompt 1: Projekt pruefen
 
 ```text
-Prüfe die vorhandenen Projektdokumente für SoloTodo PWA auf Konsistenz.
+Pruefe die vorhandenen Projektdokumente fuer SoloTodo PWA auf Konsistenz.
 
-Berücksichtige:
+Beruecksichtige:
 - MASTER_BLUEPRINT.md
 - README.md
 - PRD.md
@@ -22,162 +22,70 @@ Berücksichtige:
 - docs/DECISIONS.md
 
 Aufgaben:
-1. Prüfe auf Widersprüche.
-2. Prüfe, ob alle Muss-Funktionen aus PRD.md im IMPLEMENTATION_PLAN.md abgedeckt sind.
-3. Prüfe, ob TECHNICAL_SPEC.md keine Nicht-Ziele verletzt.
-4. Prüfe, ob TEST_PLAN.md alle Muss-Funktionen testet.
-5. Ändere keinen Code.
-6. Gib eine strukturierte Liste mit Findings, Risiken und empfohlenen Dokumentänderungen aus.
+1. Pruefe auf Widersprueche.
+2. Pruefe, ob CR_001-Stand und Nicht-Ziele konsistent dokumentiert sind.
+3. Pruefe, ob TECHNICAL_SPEC.md keine Cloud-, Login- oder Backend-Abhaengigkeit einfuehrt.
+4. Pruefe, ob TEST_PLAN.md Listen, Smart Views, Wiederholungen, Backup v2 und Offline-Nutzung abdeckt.
+5. Aendere keinen Code.
+6. Gib eine strukturierte Liste mit Findings, Risiken und empfohlenen Dokumentaenderungen aus.
 ```
 
-## Prompt 2: Projekt initialisieren
+## Prompt 2: Regression pruefen
 
 ```text
-Initialisiere das Coding-Projekt für SoloTodo PWA auf Basis der vorhandenen Projektdokumente.
+Pruefe SoloTodo V2 gegen TEST_PLAN.md.
 
-Ziele:
-- Erstelle die technische Grundstruktur.
-- Implementiere noch keine erweiterten Features.
-- Halte dich strikt an MVP, Nicht-Ziele und AGENTS.md.
-
-Wichtig:
-- Kein Backend.
-- Kein Login.
-- Keine Cloud-Synchronisierung.
-- Mobile-first.
-- Lokale Speicherung vorbereiten.
-- Offline-Fähigkeit vorbereiten.
-
-Ergebnis:
-- Projekt kann lokal gestartet werden.
-- Grundlayout mit Platzhalteransichten existiert.
-- README wird mit echtem Setup aktualisiert.
-```
-
-## Prompt 3: MVP Phase 1 umsetzen
-
-```text
-Setze Phase 1 aus IMPLEMENTATION_PLAN.md um.
-
-Umfang:
-- mobile-first App Shell
-- Bottom Navigation
-- Ansichten: Heute, Kalender, Inbox, Mehr
-- globaler Button „+ Aufgabe“
-- einfache Platzhalterinhalte
+Scope:
+- Dashboard
+- Geplant mit Liste, Woche und Kalender
+- Listen und Listendetail
+- Smart Views
+- Task-Formular
+- Wiederholungen
+- Backup v2
+- lokale Persistenz
+- Offline-Faehigkeit
 
 Nicht umsetzen:
 - kein Backend
-- keine Cloud
 - kein Login
-- noch keine komplexen Features
+- keine Cloud-Synchronisierung
+- keine Suche
+- kein Dark Mode
+- keine externe Kalenderintegration
 
-Nach Umsetzung:
-- Smoke Test dokumentieren.
-- README aktualisieren, falls Startbefehl oder Struktur geändert wurde.
+Fuehre relevante Tests, Build und einen Browser-Smoke-Test aus.
 ```
 
-## Prompt 4: Task-Datenmodell und lokale Speicherung
+## Prompt 3: Kleinen Change umsetzen
 
 ```text
-Setze das Task-Datenmodell und die lokale Speicherung gemäß TECHNICAL_SPEC.md und docs/DATA_MODEL.md um.
+Setze den beschriebenen Change fuer SoloTodo PWA in kleinen, pruefbaren Schritten um.
 
-Umfang:
-- Task-Modell
-- Validierung
-- lokales Repository
-- Laden, Speichern, Aktualisieren, Löschen
-- Persistenz nach Reload
-
-Beachte:
-- lokale Speicherung ist zentrale Datenquelle.
-- Keine Server- oder API-Anbindung.
-- Fehler verständlich behandeln.
-
-Nach Umsetzung:
-- Tests oder Smoke Tests für Persistenz durchführen.
+Regeln:
+- CR- oder Issue-Dokument ist primaere Scope-Quelle.
+- Bestehende Architekturentscheidungen respektieren.
+- Keine nicht angeforderten Features ergaenzen.
+- Keine Cloud, kein Login, kein Backend.
+- Lokale Speicherung und Offline-Faehigkeit erhalten.
+- Nach Codeaenderungen relevante Tests, Build und Smoke-Test ausfuehren.
+- Nur tatsaechlich veraltete Dokumentation aktualisieren.
+- Wichtige technische Detailentscheidungen in docs/DECISIONS.md dokumentieren.
 ```
 
-## Prompt 5: Aufgaben-CRUD umsetzen
+## Prompt 4: Backup und Datenmodell pruefen
 
 ```text
-Setze vollständige Aufgabenverwaltung für den MVP um.
+Pruefe Datenmodell und Backup von SoloTodo V2.
 
-Umfang:
-- Aufgabe erstellen
-- Aufgabe bearbeiten
-- Aufgabe löschen
-- Aufgabe erledigen
-- erledigte Aufgabe wieder öffnen
-- Pflichtfeldprüfung Titel
-- Datum, Uhrzeit, Notiz und Priorität unterstützen
+Erwartungen:
+- IndexedDB nutzt Tasks und Listen.
+- Jede Aufgabe hat eine gueltige listId.
+- Allgemein existiert automatisch.
+- Backup nutzt schemaVersion 2.
+- Backup enthaelt tasks und lists.
+- Import ersetzt Daten erst nach Bestaetigung.
+- Ungueltige listId-Referenzen werden abgelehnt.
 
-Nach Umsetzung:
-- manuelle Smoke Tests aus TEST_PLAN.md durchführen.
-```
-
-## Prompt 6: Ansichtenlogik umsetzen
-
-```text
-Setze die Ansichtenlogik um.
-
-Umfang:
-- Heute zeigt heutige und überfällige offene Aufgaben.
-- Inbox zeigt Aufgaben ohne Datum.
-- Kalender zeigt Tagesliste für ausgewähltes Datum.
-- Aufgaben erscheinen an der richtigen Stelle abhängig von dueDate und status.
-
-Nicht umsetzen:
-- keine externen Kalenderintegrationen
-- keine Synchronisierung
-```
-
-## Prompt 7: Backup Import/Export umsetzen
-
-```text
-Setze JSON-Export und JSON-Import gemäß docs/DATA_MODEL.md um.
-
-Umfang:
-- Export mit schemaVersion, exportedAt, tasks und categories
-- Import mit Validierung
-- Fehlerbehandlung für ungültige Dateien
-- Schutz vor unbeabsichtigtem Datenverlust
-
-Offene Entscheidung beachten:
-- Falls Importlogik noch nicht entschieden ist, schlage eine sichere Standardlösung vor und dokumentiere sie in docs/DECISIONS.md, bevor du implementierst.
-```
-
-## Prompt 8: PWA und Offline-Fähigkeit umsetzen
-
-```text
-Setze PWA-Funktionalität und Offline-Fähigkeit um.
-
-Umfang:
-- Web App Manifest
-- Service Worker
-- App-Shell-Caching
-- Offline-Test nach erstem Laden
-
-Nicht umsetzen:
-- keine Push Notifications
-- keine Cloud-Funktionen
-- keine Serverkomponenten
-
-Nach Umsetzung:
-- Offline-Smoke-Test aus TEST_PLAN.md dokumentieren.
-```
-
-## Prompt 9: MVP-Abnahme
-
-```text
-Prüfe den MVP gegen PRD.md, TEST_PLAN.md und Definition of Done.
-
-Aufgaben:
-1. Liste erfüllte Muss-Funktionen.
-2. Liste nicht erfüllte Muss-Funktionen.
-3. Prüfe Nicht-Ziele.
-4. Prüfe Offline-Fähigkeit.
-5. Prüfe lokale Speicherung.
-6. Prüfe Import/Export.
-7. Gib eine klare Go/No-Go-Empfehlung für den MVP.
+Fuehre npm test und npm run build aus.
 ```

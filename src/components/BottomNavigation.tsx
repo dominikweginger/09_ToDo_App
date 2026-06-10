@@ -1,4 +1,4 @@
-import { CalendarDays, Inbox, ListChecks, Settings } from 'lucide-react';
+import { CalendarDays, LayoutDashboard, ListChecks, Settings } from 'lucide-react';
 import { ViewKey } from '../app/App';
 
 interface Props {
@@ -7,9 +7,9 @@ interface Props {
 }
 
 const items = [
-  { key: 'today', label: 'Heute', icon: ListChecks },
-  { key: 'calendar', label: 'Kalender', icon: CalendarDays },
-  { key: 'inbox', label: 'Inbox', icon: Inbox },
+  { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { key: 'planned', label: 'Geplant', icon: CalendarDays },
+  { key: 'lists', label: 'Listen', icon: ListChecks },
   { key: 'settings', label: 'Mehr', icon: Settings }
 ] as const;
 

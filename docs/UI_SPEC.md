@@ -2,143 +2,109 @@
 
 ## Ziel
 
-Diese Spezifikation beschreibt die mobile Benutzeroberfläche von SoloTodo PWA.
+Diese Spezifikation beschreibt die mobile Benutzeroberflaeche von SoloTodo V2 nach CR_001.
 
 ## Grundprinzipien
 
 - mobile-first
-- Touch-Bedienung
-- kurze Wege
-- große Bedienelemente
-- wenig visuelle Ablenkung
-- Aufgaben schnell erfassen
-- Kalenderbezug klar sichtbar
+- neutral-modern
+- hell und ruhig
+- kachelbasiert, aber nicht ueberladen
+- gute Lesbarkeit
+- grosse Touch-Ziele
+- keine iOS-Glasoptik
+- kein Dark Mode
+- keine sichtbare Suche in dieser Version
 
 ## Hauptnavigation
 
-Die App nutzt eine Bottom Navigation mit vier Tabs:
+Die Bottom Navigation hat vier Tabs:
 
 ```text
-Heute | Kalender | Inbox | Mehr
+Dashboard | Geplant | Listen | Mehr
 ```
 
-Die Navigation bleibt in den Hauptansichten sichtbar.
+Die App startet auf dem Dashboard. `Inbox` ist keine Hauptnavigation mehr.
 
 ## Globale Aktion
 
-Ein gut sichtbarer Button öffnet die Aufgabenerfassung:
+Der Floating Action Button `+ Aufgabe` oeffnet das Task-Formular.
+
+Vorauswahl:
+- Dashboard: `Allgemein`
+- Listendetail: geoeffnete Liste
+- Heute: heutiges Datum
+- Markiert: `isFlagged`
+- Dringend: `priority: high`
+- Woche/Kalender: ausgewaehltes Datum
+
+## Dashboard
+
+Inhalt:
+- Titel `SoloTodo`
+- sechs Smart-View-Kacheln: Heute, Geplant, Diese Woche, Naechste Woche, Markiert, Dringend
+- jede Kachel zeigt Icon, Label und offene Anzahl
+- Bereich `Meine Listen` mit offenen Aufgaben je Liste
+
+## Geplant
+
+Segment:
 
 ```text
-+ Aufgabe
+Liste | Woche | Kalender
 ```
 
-Empfohlene Position:
-- unten rechts oder prominent im unteren Bereich
-- darf Bottom Navigation nicht verdecken
+- `Liste`: Heute, Morgen, Diese Woche, Naechste Woche, Spaeter
+- `Woche`: Montag bis Sonntag, Datum und offene Anzahl je Tag
+- `Kalender`: Monatskalender mit Tagesliste
 
-## Ansicht: Heute
+## Listen
 
-Zweck:
-- Tagesplanung und schnelle Abarbeitung
+Die Listenuebersicht zeigt:
+- `Allgemein`
+- Nutzerlisten
+- Anzahl offener Aufgaben
+- neue Liste erstellen
+- Nutzerlisten umbenennen und loeschen
 
-Inhalt:
-- überfällige offene Aufgaben
-- heutige offene Aufgaben
-- optional Hinweis, wenn keine Aufgaben vorhanden sind
+## Listendetail
 
-Interaktionen:
-- Aufgabe abhaken
-- Aufgabe antippen und bearbeiten
-- Aufgabe verschieben
-- neue Aufgabe erstellen
+Zeigt Aufgaben einer Liste mit Filtern:
 
-## Ansicht: Kalender
+```text
+Offen | Erledigt | Markiert
+```
 
-Zweck:
-- Aufgaben nach Datum planen und prüfen
-
-Inhalt:
-- Monatsansicht oder einfache Kalenderübersicht
-- markierte Tage mit Aufgaben
-- Tagesliste für ausgewählten Tag
-
-Interaktionen:
-- Tag auswählen
-- Aufgabe für ausgewählten Tag erstellen
-- Aufgabe auf anderes Datum verschieben
-- Aufgabe öffnen und bearbeiten
-
-## Ansicht: Inbox
-
-Zweck:
-- Aufgaben ohne Datum sammeln und später einplanen
-
-Inhalt:
-- alle offenen Aufgaben ohne Fälligkeitsdatum
-- Sortierung nach Erstellungsdatum
-
-Interaktionen:
-- Datum setzen
-- Aufgabe bearbeiten
-- Aufgabe erledigen
-- Aufgabe löschen
-
-## Ansicht: Mehr / Einstellungen
-
-Zweck:
-- Verwaltungsfunktionen
-
-MVP-Inhalt:
-- Backup exportieren
-- Backup importieren
-- App-Information
-- Projekt-/Versionshinweis
-
-Später:
-- Dark Mode
-- Kategorien
-- PIN-Sperre
-- Backup-Erinnerung
+Erledigte Aufgaben sind standardmaessig ausgeblendet.
 
 ## Aufgabenkarte
 
-Eine Aufgabe wird kompakt dargestellt:
-
-```text
-☐ Aufgabe
-Datum/Uhrzeit · Priorität · Kategorie
-Notiz vorhanden
-```
-
-Mindestbestandteile:
-- Checkbox oder Statussymbol
+Eine Aufgabe zeigt:
+- Status-Schalter
 - Titel
-- Datumshinweis, falls vorhanden
-- Priorität, falls gesetzt
+- Datum/Uhrzeit
+- Prioritaet
+- Listenname, wenn relevant
+- Markierung
+- Wiederholungsindikator
+- Bearbeiten, Loeschen, optional Markieren und Sortieren
 
 ## Task-Formular
 
 Felder:
 - Titel
 - Notiz
+- Liste
 - Datum
 - Uhrzeit
-- Priorität
-- Kategorie optional/später
+- Prioritaet
 - Status
+- Markiert
+- Wiederholung mit Rhythmus und Intervall
 
-Regeln:
-- Titel ist Pflicht.
-- Speichern ist bei leerem Titel nicht erlaubt.
-- Abbrechen verwirft ungespeicherte Änderungen nach Bestätigung, falls nötig.
-
-## Fehler- und Leerzustände
-
-Beispiele:
-- Keine Aufgaben heute
-- Keine Aufgaben in der Inbox
-- Import fehlgeschlagen
-- Speichern nicht möglich
-- Offline verfügbar / offline aktiv
-
-Meldungen sollen kurz und verständlich sein.
+Quick Actions:
+- Heute
+- Morgen
+- Diese Woche
+- Naechste Woche
+- Ohne Datum

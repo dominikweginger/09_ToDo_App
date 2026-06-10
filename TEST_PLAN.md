@@ -2,131 +2,97 @@
 
 ## Ziel
 
-Der Testplan stellt sicher, dass SoloTodo PWA als MVP stabil, offlinefähig und alltagstauglich funktioniert.
+Der Testplan prueft SoloTodo V2 nach CR_001 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Smart Views, Backup v2 und mobile Bedienbarkeit.
 
-## Teststrategie
+## Automatisierte Tests
 
-Es werden drei Testebenen genutzt:
+Ausfuehren:
 
-1. manuelle Smoke Tests
-2. funktionale Tests der Kernlogik
-3. gezielte Offline- und Import-/Export-Tests
+```bash
+npm test
+npm run build
+```
 
-Automatisierte Tests sind empfohlen, aber für den ersten MVP nicht wichtiger als sauber dokumentierte manuelle Abnahmetests.
+Abgedeckt:
+- Task-Erstellung mit Default-Liste
+- Pflichtfeldvalidierung
+- Statuswechsel
+- wiederkehrende Aufgabe wird beim Abhaken weitergeschoben
+- Ueberfaelligkeitslogik
+- Sortierung nach Datum und Uhrzeit
+- Backup-Schema v2
+- Import von Tasks und Listen
+- Ablehnung ungueltiger JSON-Dateien
+- Ablehnung ungueltiger `listId`-Referenzen
 
 ## Smoke Tests
 
-### Start und Navigation
+1. App starten.
+2. Dashboard erscheint.
+3. Bottom Navigation zeigt `Dashboard`, `Geplant`, `Listen`, `Mehr`.
+4. Wechsel zwischen Hauptansichten funktioniert.
+5. Floating Action Button oeffnet das Task-Formular.
+6. Aufgabe mit Titel speichern.
+7. Ohne explizite Liste landet die Aufgabe in `Allgemein`.
+8. App zeigt keine Konsolenfehler beim Start und bei den Kerninteraktionen.
 
-- App startet ohne Fehler.
-- Heute-Ansicht ist sichtbar.
-- Navigation zu Kalender, Inbox und Mehr funktioniert.
-- „+ Aufgabe“-Button ist sichtbar und bedienbar.
+## Listen
 
-### Aufgabe erstellen
+- `Allgemein` existiert automatisch.
+- Neue Liste erstellen.
+- Liste umbenennen.
+- Nicht leere Liste loeschen und Bestaetigung mit Aufgabenanzahl pruefen.
+- `Allgemein` kann nicht geloescht werden.
+- Aufgabe einer Liste zuordnen.
+- Listendetail zeigt standardmaessig offene Aufgaben.
+- Filter `Offen`, `Erledigt`, `Markiert` pruefen.
 
-- Aufgabe mit Titel kann gespeichert werden.
-- Aufgabe ohne Titel wird abgelehnt.
-- Aufgabe mit Datum erscheint in der passenden Ansicht.
-- Aufgabe ohne Datum erscheint in der Inbox.
-- Aufgabe mit heutigem Datum erscheint in Heute.
+## Smart Views
 
-### Aufgabe bearbeiten
+- Heute zeigt heute und ueberfaellige offene Aufgaben.
+- Geplant zeigt offene Aufgaben mit Datum.
+- Diese Woche nutzt Montag bis Sonntag.
+- Naechste Woche nutzt die Folgewoche Montag bis Sonntag.
+- Markiert zeigt offene markierte Aufgaben.
+- Dringend zeigt offene Aufgaben mit `priority: high`.
+- Erledigte und archivierte Aufgaben erscheinen nicht standardmaessig.
 
-- Titel kann geändert werden.
-- Datum kann geändert werden.
-- Uhrzeit kann gesetzt und entfernt werden.
-- Priorität kann geändert werden.
-- Notiz kann geändert werden.
+## Geplant, Woche und Kalender
 
-### Aufgabe erledigen
+- Segment `Liste` zeigt gruppierte Aufgaben.
+- Segment `Woche` zeigt Montag bis Sonntag mit Anzahl je Tag.
+- Ausgewaehlter Wochentag zeigt Tagesaufgaben.
+- Aufgabe fuer ausgewaehlten Tag erstellen.
+- Segment `Kalender` zeigt Monatsauswahl und Tagesliste.
+- Aufgabe auf anderes Datum verschieben.
 
-- Aufgabe kann als erledigt markiert werden.
-- Erledigte Aufgabe verschwindet aus offenen Listen oder wird als erledigt angezeigt.
-- Erledigte Aufgabe kann wieder geöffnet werden.
+## Wiederholungen
 
-### Aufgabe löschen
+- taeglich
+- woechentlich
+- monatlich
+- jaehrlich
+- alle X Tage
+- alle X Wochen
+- alle X Monate
+- Enddatum-Fall pruefen
+- Beim Abhaken bleibt die Aufgabe offen und erhaelt das naechste Datum.
 
-- Aufgabe kann gelöscht werden.
-- Löschung wird bestätigt, falls Bestätigungsdialog umgesetzt ist.
-- Gelöschte Aufgabe erscheint nach Reload nicht wieder.
+## Backup
 
-## Kalender-Tests
+- Export enthaelt `schemaVersion: 2`, `exportedAt`, `tasks`, `lists`.
+- Tasks enthalten `listId`, `isFlagged`, `recurrence`, `sortOrder`.
+- Import ersetzt Daten erst nach Bestaetigung.
+- Nach Import existiert `Allgemein`.
+- Ungueltige Backups zerstoeren keine lokalen Daten.
 
-- Kalender zeigt aktuelles Monat.
-- Ein Datum kann ausgewählt werden.
-- Tagesliste zeigt Aufgaben des gewählten Datums.
-- Aufgabe kann auf ein anderes Datum verschoben werden.
-- Aufgaben ohne Datum erscheinen nicht in der Tagesliste.
+## Offline Regression
 
-## Heute-Ansicht
+Voraussetzung: App wurde einmal online geladen.
 
-- Heutige offene Aufgaben werden angezeigt.
-- Überfällige offene Aufgaben werden erkennbar angezeigt.
-- Erledigte Aufgaben werden nicht fälschlich als offen dargestellt.
-
-## Inbox
-
-- Aufgaben ohne Datum werden angezeigt.
-- Aufgabe verschwindet aus Inbox, wenn ein Datum gesetzt wird.
-- Aufgabe erscheint wieder in Inbox, wenn Datum entfernt wird.
-
-## Persistenztests
-
-- Aufgabe erstellen.
-- Browser/App schließen.
-- App erneut öffnen.
-- Aufgabe ist weiterhin vorhanden.
-
-Zusätzlich:
-- Status bleibt erhalten.
-- Datum bleibt erhalten.
-- Notiz bleibt erhalten.
-- Priorität bleibt erhalten.
-
-## Offline-Tests
-
-Voraussetzung:
-- App wurde mindestens einmal online geladen.
-
-Tests:
-- Internetverbindung deaktivieren.
-- App öffnen.
-- Aufgabe erstellen.
-- Aufgabe bearbeiten.
-- Aufgabe erledigen.
-- App schließen und erneut öffnen.
-- Daten bleiben erhalten.
-
-Fehlerfall:
-- App erstmalig offline öffnen.
-- Erwartung: verständliche Browser-/App-Reaktion, soweit technisch möglich.
-
-## Import-/Export-Tests
-
-### Export
-
-- Export erzeugt JSON-Datei.
-- JSON enthält `schemaVersion`.
-- JSON enthält `exportedAt`.
-- JSON enthält vorhandene Aufgaben.
-
-### Import
-
-- gültige JSON-Datei kann importiert werden.
-- ungültige JSON-Datei wird abgelehnt.
-- falsche Schema-Version wird erkannt.
-- leere Datei wird abgefangen.
-- Nutzer wird vor Datenüberschreibung gewarnt, falls Import ersetzt.
-
-## Akzeptanzkriterien
-
-Der MVP ist bestanden, wenn:
-
-- alle Muss-Funktionen aus PRD.md funktionieren.
-- keine Cloud-, Login- oder Backend-Abhängigkeit existiert.
-- lokale Speicherung zuverlässig funktioniert.
-- Offline-Nutzung nach erstem Laden möglich ist.
-- JSON-Backup funktioniert.
-- relevante Fehlerfälle verständlich behandelt werden.
-- README den Projektstart korrekt beschreibt.
+- Internet deaktivieren.
+- App oeffnen.
+- Aufgabe erstellen, bearbeiten, loeschen.
+- Liste erstellen, bearbeiten, loeschen.
+- Backup exportieren.
+- App neu oeffnen und lokale Daten pruefen.

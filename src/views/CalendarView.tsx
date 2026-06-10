@@ -2,21 +2,24 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { EmptyState } from '../components/EmptyState';
 import { TaskCard } from '../components/TaskCard';
 import { formatDateLabel, monthDays, todayKey, toDateKey } from '../domain/date-utils';
+import { TodoList } from '../domain/list-model';
 import { Task } from '../domain/task-model';
 import { sortTasks } from '../domain/task-service';
 
 interface Props {
   tasks: Task[];
+  lists: TodoList[];
   selectedDate: string;
   onSelectedDate: (date: string) => void;
   onAddForDate: (date: string) => void;
   onToggle: (task: Task) => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
+  onToggleFlag: (task: Task) => void;
   onMoveDate: (task: Task, dueDate: string | null) => void;
 }
 
-export function CalendarView({ tasks, selectedDate, onSelectedDate, onAddForDate, ...taskActions }: Props) {
+export function CalendarView({ tasks, lists, selectedDate, onSelectedDate, onAddForDate, ...taskActions }: Props) {
   const days = monthDays(selectedDate);
   const [year, month] = selectedDate.split('-').map(Number);
   const monthLabel = new Intl.DateTimeFormat('de-AT', { month: 'long', year: 'numeric' }).format(new Date(year, month - 1, 1));
@@ -28,7 +31,7 @@ export function CalendarView({ tasks, selectedDate, onSelectedDate, onAddForDate
   }
 
   return (
-    <section className="view">
+    <section className="calendar-panel">
       <header className="view-header row-header">
         <div>
           <h1>Kalender</h1>
@@ -38,7 +41,7 @@ export function CalendarView({ tasks, selectedDate, onSelectedDate, onAddForDate
           <button className="icon-button" type="button" onClick={() => changeMonth(-1)} aria-label="Vorheriger Monat" title="Vorheriger Monat">
             <ChevronLeft size={20} aria-hidden="true" />
           </button>
-          <button className="icon-button" type="button" onClick={() => changeMonth(1)} aria-label="Naechster Monat" title="Nächster Monat">
+          <button className="icon-button" type="button" onClick={() => changeMonth(1)} aria-label="Naechster Monat" title="Naechster Monat">
             <ChevronRight size={20} aria-hidden="true" />
           </button>
         </div>
@@ -66,11 +69,11 @@ export function CalendarView({ tasks, selectedDate, onSelectedDate, onAddForDate
         </button>
       </div>
       {selectedTasks.length === 0 ? (
-        <EmptyState title="Keine Aufgaben an diesem Tag" text="Lege eine Aufgabe für den ausgewählten Tag an." />
+        <EmptyState title="Keine Aufgaben an diesem Tag" text="Lege eine Aufgabe fuer den ausgewaehlten Tag an." />
       ) : (
         <div className="task-list">
           {selectedTasks.map((task) => (
-            <TaskCard key={task.id} task={task} {...taskActions} />
+            <TaskCard key={task.id} task={task} list={lists.find((list) => list.id === task.listId)} {...taskActions} />
           ))}
         </div>
       )}

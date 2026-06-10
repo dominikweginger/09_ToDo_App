@@ -2,180 +2,51 @@
 
 ## Ziel
 
-Dieses Dokument beschreibt die empfohlene Umsetzungsreihenfolge für den MVP von SoloTodo PWA. Die Umsetzung soll schrittweise erfolgen, damit Codex die App stabil und prüfbar aufbauen kann.
+Dieses Dokument beschreibt den aktuellen Umsetzungsstand nach CR_001. Die Umsetzung erfolgte als Big-Bang-Change in kleinen technischen Teilbereichen.
 
-## Phase 0: Projektentscheidung und Setup
+## Abgeschlossen mit CR_001
 
-Ziele:
-- Tech-Stack final festlegen
-- Projektstruktur anlegen
-- Entwicklungsumgebung startfähig machen
+1. Feature-Branch fuer den Change erstellt.
+2. Task-Modell um `listId`, `isFlagged`, `recurrence` und `sortOrder` erweitert.
+3. Listenmodell mit Default-Liste `Allgemein` ergaenzt.
+4. IndexedDB auf Version 2 mit `tasks`- und `lists`-Store erweitert.
+5. Listen-Repository und Listen-Domain-Service ergaenzt.
+6. Smart-View-Service fuer Heute, Geplant, Diese Woche, Naechste Woche, Markiert und Dringend ergaenzt.
+7. Wiederholungsservice fuer taeglich, woechentlich, monatlich, jaehrlich und Intervallvarianten ergaenzt.
+8. App-State und Handler fuer Listen, Smart Views, Wiederholungen, Markierung und Sortierung umgebaut.
+9. Hauptnavigation auf `Dashboard | Geplant | Listen | Mehr` geaendert.
+10. Dashboard, Geplant, Listen, Listendetail und Smart-View-Detail ergaenzt.
+11. Kalenderansicht in `Geplant` integriert und fachlich erhalten.
+12. Task-Formular um Liste, Markierung, Wiederholung und Quick Actions erweitert.
+13. Task-Karten um Liste, Markierung, Wiederholung und Sortieraktionen erweitert.
+14. Backup-Schema auf v2 fuer Tasks und Listen umgebaut.
+15. Tests fuer Domain-Logik, Wiederholungen und Backup v2 aktualisiert.
+16. Service-Worker-Cache-Version erhoeht.
+17. Projektdokumentation an den neuen Stand angepasst.
 
-Aufgaben:
-- Entscheidung zu Framework dokumentieren
-- Entscheidung zu IndexedDB direkt oder Dexie.js dokumentieren
-- Basisprojekt erstellen
-- Linting/Formatierung optional einrichten
-- Ordnerstruktur anlegen
+## Nicht umgesetzt, weil explizit nicht im Scope
 
-Ergebnis:
-- App startet lokal mit leerer Startseite.
-
-## Phase 1: Grundlayout und Navigation
-
-Ziele:
-- mobile-first Grundlayout
-- Bottom Navigation
-- Platzhalteransichten
-
-Umzusetzen:
-- Heute
-- Kalender
-- Inbox
-- Mehr/Einstellungen
-- globaler „+ Aufgabe“-Button
-
-Ergebnis:
-- Nutzer kann zwischen den Hauptansichten wechseln.
-
-## Phase 2: Datenmodell und lokale Speicherung
-
-Ziele:
-- Task-Modell implementieren
-- lokale Persistenz herstellen
-
-Umzusetzen:
-- Task-Typ/Interface
-- Validierungslogik
-- Repository/Data-Service
-- IndexedDB-Anbindung
-- Laden/Speichern/Löschen von Tasks
-
-Ergebnis:
-- Aufgaben bleiben nach Reload erhalten.
-
-## Phase 3: Aufgaben-CRUD
-
-Ziele:
-- Aufgaben vollständig verwalten
-
-Umzusetzen:
-- Aufgabe erstellen
-- Aufgabe bearbeiten
-- Aufgabe löschen
-- Aufgabe erledigen
-- erledigte Aufgabe wieder öffnen
-- Task-Formular oder Bottom Sheet
-- Pflichtfeldprüfung für Titel
-
-Ergebnis:
-- Kernverwaltung funktioniert.
-
-## Phase 4: Ansichtenlogik
-
-Ziele:
-- Aufgaben korrekt in Ansichten anzeigen
-
-Umzusetzen:
-- Heute-Ansicht mit heutigen Aufgaben
-- Anzeige überfälliger Aufgaben
-- Inbox für Aufgaben ohne Datum
-- Kalenderansicht mit Tagesauswahl
-- Tagesliste je Kalenderdatum
-- einfache Gesamtübersicht oder Suche
-
-Ergebnis:
-- Aufgaben erscheinen abhängig von Datum und Status an der richtigen Stelle.
-
-## Phase 5: Backup Import/Export
-
-Ziele:
-- lokale Datensicherung ermöglichen
-
-Umzusetzen:
-- JSON-Export
-- JSON-Import
-- Schema-Version prüfen
-- Fehlerfälle behandeln
-- Warnung vor Überschreiben oder Importkonflikten
-
-Offene Entscheidung:
-- Ersetzen oder Zusammenführen bestehender Daten.
-
-Ergebnis:
-- Nutzer kann Daten sichern und wiederherstellen.
-
-## Phase 6: PWA und Offline-Fähigkeit
-
-Ziele:
-- App installierbar und offlinefähig machen
-
-Umzusetzen:
-- Web App Manifest
-- Service Worker
-- App-Shell-Caching
-- Offline-Test
-- Basis-Icon/Splash optional
-
-Ergebnis:
-- App funktioniert nach erstem Laden offline.
-
-## Phase 7: Tests und Stabilisierung
-
-Ziele:
-- MVP fachlich und technisch absichern
-
-Umzusetzen:
-- Smoke Tests
-- Validierungstests
-- Import-/Export-Tests
-- Offline-Test
-- manuelle Smartphone-Prüfung
-- README aktualisieren
-
-Ergebnis:
-- MVP erfüllt Definition of Done.
-
-## Spätere Erweiterungsphasen
-
-Nicht vor MVP umsetzen:
-- Kategorien/Listen
-- Wiederkehrende Aufgaben
+- Backend
+- Login
+- Cloud-Sync
+- externe Kalenderintegration
+- Suche
 - Dark Mode
-- lokale Erinnerungen
-- Statistiken
-- PIN-Sperre
-- CSV-Import/Export
-- KI-Planung
+- Drag & Drop
+- komplexe RRULE-Engine
+- native Apps
+- KI-Funktionen
+- Teamfunktionen
 
-## Empfohlene Dateistruktur nach Implementierung
+## Pruefschritte
 
-```text
-src/
-├── app/
-│   └── app-shell
-├── components/
-│   ├── bottom-navigation
-│   ├── task-card
-│   ├── task-form
-│   └── dialogs
-├── views/
-│   ├── today
-│   ├── calendar
-│   ├── inbox
-│   └── settings
-├── domain/
-│   ├── task-model
-│   ├── task-service
-│   └── task-validation
-├── data/
-│   ├── task-repository
-│   ├── db
-│   └── backup-service
-├── pwa/
-│   ├── manifest
-│   └── service-worker
-└── tests/
-```
+- `npm test`
+- `npm run build`
+- Browser-Smoke-Test auf `http://127.0.0.1:5173`
 
-Hinweis: Exakte Dateiendungen hängen vom gewählten Tech-Stack ab.
+## Verbleibende technische Detailentscheidungen
+
+- `Allgemein` bleibt fix und nicht loeschbar.
+- Manuelle Sortierung ist minimal ueber Hoch/Runter-Buttons umgesetzt.
+- Die Kalenderansicht ist als Segment innerhalb von `Geplant` eingebunden.
+- v1-Backups werden nicht importiert; CR_001 verlangt Schema-Version 2.
