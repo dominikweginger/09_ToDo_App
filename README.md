@@ -64,6 +64,15 @@ Tests:
 npm test
 ```
 
+## Installierte PWA aktualisieren
+
+Bei einem neuen Deployment prueft die App beim Start und beim Zurueckwechseln in den Vordergrund auf eine neue Version. Wenn ein Update aktiv ist, erscheint der Hinweis `Neue Version verfuegbar. Neu laden.`. Tippe darauf, um die installierte PWA mit der neuen App-Shell neu zu laden.
+
+Falls ein Handy trotzdem eine alte Version zeigt:
+- App vollstaendig schliessen und erneut oeffnen.
+- Im Browser die App-URL einmal normal oeffnen und neu laden.
+- Bei hartnaeckigem Cache: installierte PWA entfernen und erneut zum Startbildschirm hinzufuegen. Lokale Aufgaben liegen im Browserkontext; vor dem Entfernen bei Bedarf ein JSON-Backup exportieren.
+
 ## Technische Entscheidungen
 
 - Frontend-Stack: React + Vite + TypeScript

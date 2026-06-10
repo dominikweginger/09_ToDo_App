@@ -39,6 +39,7 @@ export function App() {
   const [selectedDate, setSelectedDate] = useState(todayKey());
   const [message, setMessage] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
     Promise.all([getAllTasks(), getAllLists()])
@@ -49,6 +50,12 @@ export function App() {
         setTasks(storedTasks.map((task) => normalizeTask(task, listIds.has(task.listId) ? task.listId : DEFAULT_LIST_ID)));
       })
       .catch(() => setLoadError('Lokale Daten konnten nicht geladen werden.'));
+  }, []);
+
+  useEffect(() => {
+    const handleUpdateAvailable = () => setUpdateAvailable(true);
+    window.addEventListener('solotodo:update-available', handleUpdateAvailable);
+    return () => window.removeEventListener('solotodo:update-available', handleUpdateAvailable);
   }, []);
 
   const visibleTasks = useMemo(() => tasks.filter((task) => task.status !== 'archived'), [tasks]);
@@ -268,7 +275,11 @@ export function App() {
           onCancel={() => setFormOpen(false)}
         />
       )}
-      {message && (
+      {updateAvailable ? (
+        <button type="button" className="toast update-toast" onClick={() => window.location.reload()}>
+          Neue Version verfuegbar. Neu laden.
+        </button>
+      ) : message && (
         <button type="button" className="toast" onClick={() => setMessage(null)}>
           {message}
         </button>

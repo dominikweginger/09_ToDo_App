@@ -133,6 +133,18 @@ Begruendung:
 - erfuellt CR_001 ohne zusaetzliche Hauptnavigation
 - haelt zeitliche Planung an einem Ort
 
+### 14. PWA-Update-Strategie
+
+Entscheidung:
+- Der Service Worker nutzt eine explizite Cache-Version und behandelt Navigationsaufrufe sowie `index.html` network-first.
+- Neue Service Worker werden direkt aktiviert.
+- Die App prueft beim Start und beim Zurueckkehren in den Vordergrund auf Updates und zeigt einen Neuladen-Hinweis.
+
+Begruendung:
+- Installierte mobile PWAs duerfen nach einem Deployment nicht dauerhaft eine alte App-Shell ausliefern.
+- Offline-Faehigkeit bleibt erhalten, weil bei fehlendem Netzwerk auf die gecachte App-Shell zurueckgefallen wird.
+- Ein sichtbarer Neuladen-Hinweis vermeidet stille Versionswechsel waehrend der Nutzung.
+
 ## Offene Entscheidungen
 
 1. Hosting-Ziel der PWA

@@ -73,7 +73,10 @@ Import:
 
 ## Offline-Verhalten
 
-- App-Shell wird im Service Worker Cache `solotodo-shell-v2` gespeichert.
+- App-Shell wird im Service Worker Cache `solotodo-shell-v3` gespeichert.
+- Navigationsaufrufe und `index.html` werden network-first behandelt, damit installierte PWAs neue Deployments nicht dauerhaft aus einem alten Cache starten.
+- Statische Dateien werden aus dem Cache geliefert und im Hintergrund aktualisiert.
+- Die App prueft beim Start und beim Zurueckkehren in den Vordergrund auf Service-Worker-Updates und zeigt bei neuer Version einen Neuladen-Hinweis.
 - CRUD fuer Aufgaben und Listen nutzt nur IndexedDB.
 - Backup-Export funktioniert lokal.
 
