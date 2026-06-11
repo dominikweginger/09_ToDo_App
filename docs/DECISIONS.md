@@ -66,12 +66,15 @@ Begruendung:
 ### 7. IndexedDB-Zugriff
 
 Entscheidung:
-- IndexedDB direkt, ohne Dexie.js
+- Dexie ist der Standard fuer lokale Persistenz auf IndexedDB.
+- Die fruehere Entscheidung "IndexedDB direkt, ohne Dexie.js" ist verworfen.
 
 Begruendung:
-- erfuellt die lokale Persistenzanforderung
-- vermeidet eine zusaetzliche Datenbibliothek
-- haelt die Architektur klein und nachvollziehbar
+- robustere Speicherlogik und klarere Transaktionen
+- bessere kontrollierte Migrationen ohne Datenverlust
+- bessere Testbarkeit mit `fake-indexeddb`
+- strukturierte Fehlerdiagnose mit Fehlercodes
+- Vereinheitlichung mit der Architektur der Ideenapp
 
 ### 8. CR_001 Navigation und Produktstruktur
 
@@ -136,14 +139,15 @@ Begruendung:
 ### 14. PWA-Update-Strategie
 
 Entscheidung:
-- Der Service Worker nutzt eine explizite Cache-Version und behandelt Navigationsaufrufe sowie `index.html` network-first.
-- Neue Service Worker werden direkt aktiviert.
-- Die App prueft beim Start und beim Zurueckkehren in den Vordergrund auf Updates und zeigt einen Neuladen-Hinweis.
+- PWA-Handling erfolgt ueber `vite-plugin-pwa`.
+- Der generierte Service Worker precacht die App-Shell und bereinigt veraltete Caches.
+- Neue Versionen werden ueber einen sichtbaren Neuladen-Hinweis aktiviert.
+- Der alte manuelle Service Worker in `public/sw.js` wird nicht mehr verwendet.
 
 Begruendung:
-- Installierte mobile PWAs duerfen nach einem Deployment nicht dauerhaft eine alte App-Shell ausliefern.
-- Offline-Faehigkeit bleibt erhalten, weil bei fehlendem Netzwerk auf die gecachte App-Shell zurueckgefallen wird.
+- `vite-plugin-pwa` reduziert manuelle Service-Worker-Fehler und gleicht die App an die Ideenapp an.
 - Ein sichtbarer Neuladen-Hinweis vermeidet stille Versionswechsel waehrend der Nutzung.
+- IndexedDB-Daten sind nicht Teil des PWA-Caches und werden durch App-Updates nicht geloescht.
 
 ## Offene Entscheidungen
 

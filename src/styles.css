@@ -316,13 +316,44 @@ button {
 
 .app-info,
 .overview-block,
+.diagnostics-panel,
 .empty-state {
   padding: 18px;
 }
 
-.overview-block {
+.overview-block,
+.diagnostics-panel {
   display: grid;
   gap: 12px;
+}
+
+.diagnostics-panel {
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.diagnostics-panel h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.diagnostics-panel pre {
+  width: 100%;
+  max-height: 320px;
+  overflow: auto;
+  margin: 0;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #172033;
+  padding: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
 }
 
 .muted-line {

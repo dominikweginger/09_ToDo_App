@@ -2,9 +2,10 @@ import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { BottomNavigation } from '../components/BottomNavigation';
 import { TaskForm } from '../components/TaskForm';
-import { downloadBackup, parseBackupFile } from '../data/backup-service';
-import { deleteList as deleteStoredList, getAllLists, replaceLists, saveList } from '../data/list-repository';
-import { deleteTask, deleteTasksByListId, getAllTasks, replaceTasks, saveTask } from '../data/task-repository';
+import { downloadBackup, parseBackupFile, replaceAllData } from '../data/backup-service';
+import { deleteList as deleteStoredList, getAllLists, saveList } from '../data/list-repository';
+import { deleteTask, deleteTasksByListId, getAllTasks, saveTask } from '../data/task-repository';
+import { isStorageError, logStorageError, storageErrorToUserMessage } from '../data/storage-errors';
 import { todayKey } from '../domain/date-utils';
 import { DEFAULT_LIST_ID, TodoList } from '../domain/list-model';
 import { createList, ensureDefaultList, isDefaultList, renameList } from '../domain/list-service';
@@ -27,6 +28,12 @@ type FormDefaults = {
   priority?: TaskDraft['priority'];
 };
 
+function errorToMessage(error: unknown, fallback: string): string {
+  if (isStorageError(error)) return storageErrorToUserMessage(error);
+  if (error instanceof Error && !/failed to execute|domexception/i.test(error.message)) return error.message;
+  return fallback;
+}
+
 export function App() {
   const [view, setView] = useState<ViewKey>('dashboard');
   const [smartView, setSmartView] = useState<SmartViewKey | null>(null);
@@ -40,6 +47,7 @@ export function App() {
   const [message, setMessage] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [applyUpdate, setApplyUpdate] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     Promise.all([getAllTasks(), getAllLists()])
@@ -49,13 +57,32 @@ export function App() {
         setLists(safeLists);
         setTasks(storedTasks.map((task) => normalizeTask(task, listIds.has(task.listId) ? task.listId : DEFAULT_LIST_ID)));
       })
-      .catch(() => setLoadError('Lokale Daten konnten nicht geladen werden.'));
+      .catch((error) => {
+        logStorageError('initial load', error);
+        setLoadError(errorToMessage(error, 'Lokale Daten konnten nicht geladen werden.'));
+      });
   }, []);
 
   useEffect(() => {
-    const handleUpdateAvailable = () => setUpdateAvailable(true);
+    const handleUpdateAvailable = (event: Event) => {
+      const customEvent = event as CustomEvent<{ updateServiceWorker?: (reloadPage?: boolean) => Promise<void> }>;
+      setApplyUpdate(() => () => {
+        void customEvent.detail?.updateServiceWorker?.(true);
+      });
+      setUpdateAvailable(true);
+    };
     window.addEventListener('solotodo:update-available', handleUpdateAvailable);
     return () => window.removeEventListener('solotodo:update-available', handleUpdateAvailable);
+  }, []);
+
+  useEffect(() => {
+    const handleStorageError = (event: Event) => {
+      const error = (event as CustomEvent<unknown>).detail;
+      logStorageError('runtime storage event', error);
+      setMessage(errorToMessage(error, 'Lokaler Speicherstatus hat sich geaendert. Bitte neu laden oder Speicherdiagnose ausfuehren.'));
+    };
+    window.addEventListener('solotodo:storage-error', handleStorageError);
+    return () => window.removeEventListener('solotodo:storage-error', handleStorageError);
   }, []);
 
   const visibleTasks = useMemo(() => tasks.filter((task) => task.status !== 'archived'), [tasks]);
@@ -102,23 +129,26 @@ export function App() {
       setFormOpen(false);
       setMessage('Aufgabe gespeichert.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Aufgabe konnte nicht gespeichert werden.');
+      logStorageError('save task ui', error);
+      setMessage(errorToMessage(error, 'Aufgabe konnte nicht gespeichert werden.'));
     }
   }
 
   async function handleToggle(task: Task) {
     try {
       await persistTask(toggleTaskDone(task));
-    } catch {
-      setMessage('Status konnte nicht gespeichert werden.');
+    } catch (error) {
+      logStorageError('toggle task ui', error);
+      setMessage(errorToMessage(error, 'Status konnte nicht gespeichert werden.'));
     }
   }
 
   async function handleToggleFlag(task: Task) {
     try {
       await persistTask({ ...task, isFlagged: !task.isFlagged, updatedAt: new Date().toISOString() });
-    } catch {
-      setMessage('Markierung konnte nicht gespeichert werden.');
+    } catch (error) {
+      logStorageError('toggle flag ui', error);
+      setMessage(errorToMessage(error, 'Markierung konnte nicht gespeichert werden.'));
     }
   }
 
@@ -127,8 +157,9 @@ export function App() {
       await deleteTask(task.id);
       setTasks((current) => current.filter((item) => item.id !== task.id));
       setMessage('Aufgabe geloescht.');
-    } catch {
-      setMessage('Aufgabe konnte nicht geloescht werden.');
+    } catch (error) {
+      logStorageError('delete task ui', error);
+      setMessage(errorToMessage(error, 'Aufgabe konnte nicht geloescht werden.'));
     }
   }
 
@@ -136,8 +167,9 @@ export function App() {
     try {
       await persistTask(moveTaskToDate(task, dueDate));
       setMessage(dueDate ? 'Datum aktualisiert.' : 'Datum entfernt.');
-    } catch {
-      setMessage('Datum konnte nicht gespeichert werden.');
+    } catch (error) {
+      logStorageError('move date ui', error);
+      setMessage(errorToMessage(error, 'Datum konnte nicht gespeichert werden.'));
     }
   }
 
@@ -148,9 +180,14 @@ export function App() {
     if (!swap) return;
     const first = { ...task, sortOrder: swap.sortOrder, updatedAt: new Date().toISOString() };
     const second = { ...swap, sortOrder: task.sortOrder, updatedAt: new Date().toISOString() };
-    await saveTask(first);
-    await saveTask(second);
-    setTasks((current) => current.map((item) => (item.id === first.id ? first : item.id === second.id ? second : item)));
+    try {
+      await saveTask(first);
+      await saveTask(second);
+      setTasks((current) => current.map((item) => (item.id === first.id ? first : item.id === second.id ? second : item)));
+    } catch (error) {
+      logStorageError('move sort ui', error);
+      setMessage(errorToMessage(error, 'Sortierung konnte nicht gespeichert werden.'));
+    }
   }
 
   async function handleCreateList() {
@@ -162,7 +199,8 @@ export function App() {
       setLists((current) => [...current, list]);
       setMessage('Liste erstellt.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Liste konnte nicht erstellt werden.');
+      logStorageError('create list ui', error);
+      setMessage(errorToMessage(error, 'Liste konnte nicht erstellt werden.'));
     }
   }
 
@@ -175,7 +213,8 @@ export function App() {
       setLists((current) => current.map((item) => (item.id === renamed.id ? renamed : item)));
       setMessage('Liste umbenannt.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Liste konnte nicht umbenannt werden.');
+      logStorageError('rename list ui', error);
+      setMessage(errorToMessage(error, 'Liste konnte nicht umbenannt werden.'));
     }
   }
 
@@ -183,12 +222,17 @@ export function App() {
     if (isDefaultList(list.id)) return;
     const affected = tasks.filter((task) => task.listId === list.id).length;
     if (affected > 0 && !window.confirm(`Diese Liste enthaelt ${affected} Aufgaben. Liste und Aufgaben loeschen?`)) return;
-    await deleteTasksByListId(list.id);
-    await deleteStoredList(list.id);
-    setTasks((current) => current.filter((task) => task.listId !== list.id));
-    setLists((current) => current.filter((item) => item.id !== list.id));
-    if (selectedListId === list.id) setSelectedListId(DEFAULT_LIST_ID);
-    setMessage('Liste geloescht.');
+    try {
+      await deleteTasksByListId(list.id);
+      await deleteStoredList(list.id);
+      setTasks((current) => current.filter((task) => task.listId !== list.id));
+      setLists((current) => current.filter((item) => item.id !== list.id));
+      if (selectedListId === list.id) setSelectedListId(DEFAULT_LIST_ID);
+      setMessage('Liste geloescht.');
+    } catch (error) {
+      logStorageError('delete list ui', error);
+      setMessage(errorToMessage(error, 'Liste konnte nicht geloescht werden.'));
+    }
   }
 
   async function handleImport(file: File) {
@@ -198,15 +242,16 @@ export function App() {
         `Import ersetzt ${tasks.length} Aufgaben und ${lists.length} Listen durch ${backup.tasks.length} Aufgaben und ${backup.lists.length} Listen. Fortfahren?`
       );
       if (!confirmed) return;
-      await replaceLists(backup.lists);
-      await replaceTasks(backup.tasks);
-      setLists(backup.lists);
+      const safeLists = ensureDefaultList(backup.lists);
+      await replaceAllData({ ...backup, lists: safeLists });
+      setLists(safeLists);
       setTasks(backup.tasks);
       setSelectedListId(null);
       setSmartView(null);
       setMessage('Backup importiert.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Backup konnte nicht importiert werden.');
+      logStorageError('import backup ui', error);
+      setMessage(errorToMessage(error, 'Backup konnte nicht importiert werden.'));
     }
   }
 
@@ -247,6 +292,7 @@ export function App() {
           onExport={() => downloadBackup(visibleTasks, lists)}
           onImport={handleImport}
           onMoveSort={handleMoveSort}
+          appVersion={__APP_VERSION__}
           {...taskActions}
         />
       )}
@@ -276,7 +322,7 @@ export function App() {
         />
       )}
       {updateAvailable ? (
-        <button type="button" className="toast update-toast" onClick={() => window.location.reload()}>
+        <button type="button" className="toast update-toast" onClick={() => (applyUpdate ? applyUpdate() : window.location.reload())}>
           Neue Version verfuegbar. Neu laden.
         </button>
       ) : message && (

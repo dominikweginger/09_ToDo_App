@@ -3,6 +3,7 @@ import { DEFAULT_LIST_ID } from './list-model';
 import { nextRecurrenceDate } from './recurrence-service';
 import { Task, TaskDraft } from './task-model';
 import { validateTaskDraft } from './task-validation';
+import { createId } from './id-service';
 
 export function createTask(draft: TaskDraft, forcedDate?: string, sortOrder = Date.now()): Task {
   const normalized = normalizeDraft(draft, forcedDate);
@@ -11,7 +12,7 @@ export function createTask(draft: TaskDraft, forcedDate?: string, sortOrder = Da
 
   const now = new Date().toISOString();
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     title: normalized.title.trim(),
     description: normalized.description.trim() || null,
     status: normalized.status,
@@ -91,7 +92,7 @@ export function sortListTasks(tasks: Task[]): Task[] {
 export function normalizeTask(task: Partial<Task>, fallbackListId = DEFAULT_LIST_ID): Task {
   const now = new Date().toISOString();
   return {
-    id: task.id ?? crypto.randomUUID(),
+    id: task.id ?? createId(),
     title: task.title ?? '',
     description: task.description ?? null,
     status: task.status ?? 'open',

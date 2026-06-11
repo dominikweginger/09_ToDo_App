@@ -2,7 +2,7 @@
 
 ## Zielarchitektur
 
-SoloTodo PWA ist eine mobile-first React/Vite/TypeScript-App. Sie laeuft vollstaendig im Browser, speichert lokal in IndexedDB und nutzt einen Service Worker fuer die App-Shell.
+SoloTodo PWA ist eine mobile-first React/Vite/TypeScript-App. Sie laeuft vollstaendig im Browser, speichert lokal per Dexie in IndexedDB und nutzt `vite-plugin-pwa` fuer App-Shell und Updates.
 
 ## Technische Grundsaetze
 
@@ -34,27 +34,40 @@ SoloTodo PWA ist eine mobile-first React/Vite/TypeScript-App. Sie laeuft vollsta
 
 ### Data Layer
 
-- `db.ts`: IndexedDB Version 2 mit Stores `tasks` und `lists`
+- `db.ts`: Dexie-Datenbank `solotodo-db` mit Schema-Version 2 und Stores `tasks` und `lists`
+- `schema.ts`: Datenbankname, Version und Store-Definitionen
+- `storage-errors.ts`: strukturierte Speicherfehler mit Fehlercodes und UI-Mapping
+- `storage-diagnostics.ts`: lokale Diagnose ohne Ausgabe von Aufgabeninhalten
 - `task-repository.ts`: CRUD fuer Aufgaben
 - `list-repository.ts`: CRUD fuer Listen
-- `backup-service.ts`: Backup-Schema v2 fuer Tasks und Listen
+- `backup-service.ts`: Backup-Schema v2 und atomarer Import fuer Tasks und Listen
 
 ## Datenfluss
 
 ```text
 UI-Aktion
   -> Domain-Service validiert und verarbeitet
-  -> Repository speichert in IndexedDB
+  -> Repository speichert ueber Dexie in IndexedDB
   -> App-State wird aktualisiert
   -> View rendert berechnete Listen oder Smart Views
 ```
 
-## IndexedDB
+## Lokale Persistenz
 
 - Datenbank: `solotodo-db`
-- Version: `2`
+- Dexie Schema-Version: `2`
 - Store `tasks` mit Indizes `dueDate`, `status`, `listId`
 - Store `lists`
+- Bestehende Daten aus der direkten IndexedDB-Implementierung werden durch denselben Datenbanknamen und dieselben Stores weiterverwendet.
+- Keine Migration darf Stores oder Records automatisch loeschen.
+- Ein unrettbarer lokaler Zustand fuehrt zu Diagnose und Nutzerhinweis, nicht zu stillem Reset.
+
+## Speicherfehler
+
+- Speicherfehler werden als `StorageError` mit Codes gemeldet, z. B. `DB_OPEN_FAILED`, `DB_BLOCKED`, `DB_STORE_MISSING`, `DB_READ_FAILED`, `DB_WRITE_FAILED`, `DB_DELETE_FAILED`, `DB_IMPORT_VALIDATION_FAILED`, `DB_IMPORT_TRANSACTION_FAILED`, `DB_QUOTA_EXCEEDED` und `ID_GENERATION_FAILED`.
+- Technische Details werden per `console.error` protokolliert.
+- Die UI zeigt nur verstaendliche deutsche Meldungen, keine rohen Browser- oder DOMException-Texte.
+- IDs werden zentral ueber `createId()` erzeugt: `crypto.randomUUID()`, dann `crypto.getRandomValues()`, dann Zeitstempel/Random-Fallback.
 
 ## Import-/Export-Regeln
 
@@ -70,15 +83,18 @@ Import:
 - verlangt gueltige `listId`-Referenzen
 - stellt `Allgemein` sicher
 - ersetzt lokale Daten erst nach Bestaetigung
+- ersetzt Tasks und Listen atomar in einer Dexie-Transaktion
+- ungueltige Backups veraendern bestehende lokale Daten nicht
 
 ## Offline-Verhalten
 
-- App-Shell wird im Service Worker Cache `solotodo-shell-v3` gespeichert.
-- Navigationsaufrufe und `index.html` werden network-first behandelt, damit installierte PWAs neue Deployments nicht dauerhaft aus einem alten Cache starten.
-- Statische Dateien werden aus dem Cache geliefert und im Hintergrund aktualisiert.
-- Die App prueft beim Start und beim Zurueckkehren in den Vordergrund auf Service-Worker-Updates und zeigt bei neuer Version einen Neuladen-Hinweis.
-- CRUD fuer Aufgaben und Listen nutzt nur IndexedDB.
+- `vite-plugin-pwa` erzeugt den Service Worker und das PWA-Manifest.
+- Die App-Shell wird precached und veraltete Caches werden bereinigt.
+- Neue Versionen werden per sichtbarem Neuladen-Hinweis aktiviert.
+- CRUD fuer Aufgaben und Listen nutzt nur Dexie/IndexedDB.
 - Backup-Export funktioniert lokal.
+- PWA-Updates loeschen keine IndexedDB-Daten.
+- In `Mehr` ist die App-Version sichtbar und eine Speicherdiagnose ausfuehrbar.
 
 ## Technische Nicht-Ziele
 

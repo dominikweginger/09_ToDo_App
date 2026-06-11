@@ -1,4 +1,5 @@
 import { DEFAULT_LIST_ID, TodoList, createDefaultList } from './list-model';
+import { createId } from './id-service';
 
 export function ensureDefaultList(lists: TodoList[]): TodoList[] {
   const byId = new Map(lists.map((list) => [list.id, list]));
@@ -11,7 +12,7 @@ export function createList(name: string): TodoList {
   if (!normalized) throw new Error('Der Listenname ist erforderlich.');
   const now = new Date().toISOString();
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     name: normalized,
     color: null,
     createdAt: now,

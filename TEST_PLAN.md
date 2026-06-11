@@ -24,6 +24,13 @@ Abgedeckt:
 - Import von Tasks und Listen
 - Ablehnung ungueltiger JSON-Dateien
 - Ablehnung ungueltiger `listId`-Referenzen
+- Dexie-basierte Storage-Operationen fuer Tasks und Listen
+- Default-Liste in der Storage-Schicht
+- atomarer Import/Replace von Tasks und Listen
+- ungueltiger Import zerstoert bestehende lokale Daten nicht
+- StorageError-Codes bei Speicherfehlern
+- `createId()` ohne `crypto.randomUUID`
+- Speicherdiagnose ohne Ausgabe von Aufgabeninhalten
 
 ## Smoke Tests
 
@@ -83,8 +90,16 @@ Abgedeckt:
 - Export enthaelt `schemaVersion: 2`, `exportedAt`, `tasks`, `lists`.
 - Tasks enthalten `listId`, `isFlagged`, `recurrence`, `sortOrder`.
 - Import ersetzt Daten erst nach Bestaetigung.
+- Import ersetzt Tasks und Listen atomar.
 - Nach Import existiert `Allgemein`.
 - Ungueltige Backups zerstoeren keine lokalen Daten.
+
+## Speicherdiagnose
+
+- In `Mehr` den Button `Speicherdiagnose ausfuehren` starten.
+- Bericht zeigt IndexedDB-Verfuegbarkeit, DB-Version, Stores, Anzahl Tasks/Listen, Test-Schreib-/Loeschvorgang, ID-Erzeugung, Service-Worker-Status, Cache-Status und App-Version.
+- Bericht enthaelt keine Aufgaben-Titel oder Notizen.
+- Bericht laesst sich kopieren.
 
 ## Offline Regression
 
@@ -96,3 +111,15 @@ Voraussetzung: App wurde einmal online geladen.
 - Liste erstellen, bearbeiten, loeschen.
 - Backup exportieren.
 - App neu oeffnen und lokale Daten pruefen.
+
+## Android/PWA Smoke Test
+
+1. App auf Android installieren bzw. zum Startbildschirm hinzufuegen.
+2. Aufgabe erstellen.
+3. Liste erstellen.
+4. App vollstaendig schliessen und neu oeffnen.
+5. Pruefen, dass Aufgabe und Liste erhalten bleiben.
+6. Neue Version deployen und sichtbaren Update-Hinweis pruefen.
+7. Speicherdiagnose ausfuehren und Bericht kopieren.
+8. Internet deaktivieren, App oeffnen und eine Aufgabe lokal aendern.
+9. App erneut oeffnen und Datenpersistenz pruefen.

@@ -1,26 +1,54 @@
 import { createDefaultList } from '../domain/list-model';
 import { ensureDefaultList } from '../domain/list-service';
-import { StoredList, getListStore, requestToPromise } from './db';
+import { StoredList, db, openStorageDatabase } from './db';
+import { logStorageError, toStorageError } from './storage-errors';
 
 export async function getAllLists(): Promise<StoredList[]> {
-  const store = await getListStore('readonly');
-  const lists = ensureDefaultList(await requestToPromise(store.getAll()));
-  if (!lists.some((list) => list.id === createDefaultList().id)) await saveList(createDefaultList());
-  return lists;
+  try {
+    await openStorageDatabase();
+    const storedLists = await db.lists.toArray();
+    const lists = ensureDefaultList(storedLists);
+    if (!storedLists.some((list) => list.id === createDefaultList().id)) await db.lists.put(createDefaultList());
+    return lists;
+  } catch (error) {
+    const storageError = toStorageError('DB_READ_FAILED', 'Listen konnten nicht gelesen werden.', error);
+    logStorageError('read lists', storageError);
+    throw storageError;
+  }
 }
 
 export async function saveList(list: StoredList): Promise<void> {
-  const store = await getListStore('readwrite');
-  await requestToPromise(store.put(list));
+  try {
+    await openStorageDatabase();
+    await db.lists.put(list);
+  } catch (error) {
+    const storageError = toStorageError('DB_WRITE_FAILED', 'Liste konnte nicht gespeichert werden.', error);
+    logStorageError('save list', storageError);
+    throw storageError;
+  }
 }
 
 export async function replaceLists(lists: StoredList[]): Promise<void> {
-  const store = await getListStore('readwrite');
-  await requestToPromise(store.clear());
-  await Promise.all(ensureDefaultList(lists).map((list) => requestToPromise(store.put(list))));
+  try {
+    await openStorageDatabase();
+    await db.transaction('rw', db.lists, async () => {
+      await db.lists.clear();
+      await db.lists.bulkPut(ensureDefaultList(lists));
+    });
+  } catch (error) {
+    const storageError = toStorageError('DB_WRITE_FAILED', 'Listen konnten nicht ersetzt werden.', error);
+    logStorageError('replace lists', storageError);
+    throw storageError;
+  }
 }
 
 export async function deleteList(id: string): Promise<void> {
-  const store = await getListStore('readwrite');
-  await requestToPromise(store.delete(id));
+  try {
+    await openStorageDatabase();
+    await db.lists.delete(id);
+  } catch (error) {
+    const storageError = toStorageError('DB_DELETE_FAILED', 'Liste konnte nicht geloescht werden.', error);
+    logStorageError('delete list', storageError);
+    throw storageError;
+  }
 }
