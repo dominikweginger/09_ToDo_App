@@ -3,7 +3,7 @@ import { Task } from './task-model';
 import { isOverdue, sortTasks } from './task-service';
 import { addDays, isInWeek, startOfWeek } from './week-utils';
 
-export type SmartViewKey = 'today' | 'planned' | 'this-week' | 'next-week' | 'flagged' | 'urgent';
+export type SmartViewKey = 'today' | 'planned' | 'this-week' | 'next-week' | 'flagged' | 'urgent' | 'no-date';
 
 export const smartViewLabels: Record<SmartViewKey, string> = {
   today: 'Heute',
@@ -11,7 +11,8 @@ export const smartViewLabels: Record<SmartViewKey, string> = {
   'this-week': 'Diese Woche',
   'next-week': 'Naechste Woche',
   flagged: 'Markiert',
-  urgent: 'Dringend'
+  urgent: 'Dringend',
+  'no-date': 'Ohne Datum'
 };
 
 export function openVisibleTasks(tasks: Task[]): Task[] {
@@ -28,6 +29,7 @@ export function getSmartViewTasks(tasks: Task[], key: SmartViewKey, reference = 
     if (key === 'next-week') return isInWeek(task.dueDate, nextWeekAnchor);
     if (key === 'flagged') return task.isFlagged;
     if (key === 'urgent') return task.priority === 'high';
+    if (key === 'no-date') return !task.dueDate;
     return false;
   });
   return sortTasks(filtered);
@@ -40,6 +42,7 @@ export function getSmartViewCounts(tasks: Task[], reference = todayKey()): Recor
     'this-week': getSmartViewTasks(tasks, 'this-week', reference).length,
     'next-week': getSmartViewTasks(tasks, 'next-week', reference).length,
     flagged: getSmartViewTasks(tasks, 'flagged', reference).length,
-    urgent: getSmartViewTasks(tasks, 'urgent', reference).length
+    urgent: getSmartViewTasks(tasks, 'urgent', reference).length,
+    'no-date': getSmartViewTasks(tasks, 'no-date', reference).length
   };
 }

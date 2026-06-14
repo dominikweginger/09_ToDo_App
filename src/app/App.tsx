@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { BottomNavigation } from '../components/BottomNavigation';
+import { ListFormSheet } from '../components/ListFormSheet';
 import { TaskForm } from '../components/TaskForm';
 import { downloadBackup, parseBackupFile, replaceAllData } from '../data/backup-service';
 import { deleteList as deleteStoredList, getAllLists, saveList } from '../data/list-repository';
@@ -28,6 +29,10 @@ type FormDefaults = {
   priority?: TaskDraft['priority'];
 };
 
+type ListSheetState =
+  | { mode: 'create'; list: null }
+  | { mode: 'rename'; list: TodoList };
+
 function errorToMessage(error: unknown, fallback: string): string {
   if (isStorageError(error)) return storageErrorToUserMessage(error);
   if (error instanceof Error && !/failed to execute|domexception/i.test(error.message)) return error.message;
@@ -43,6 +48,7 @@ export function App() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [formDefaults, setFormDefaults] = useState<FormDefaults>({});
+  const [listSheet, setListSheet] = useState<ListSheetState | null>(null);
   const [selectedDate, setSelectedDate] = useState(todayKey());
   const [message, setMessage] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -190,9 +196,11 @@ export function App() {
     }
   }
 
-  async function handleCreateList() {
-    const name = window.prompt('Name der neuen Liste');
-    if (!name) return;
+  function handleCreateList() {
+    setListSheet({ mode: 'create', list: null });
+  }
+
+  async function saveCreatedList(name: string) {
     try {
       const list = createList(name);
       await saveList(list);
@@ -200,13 +208,16 @@ export function App() {
       setMessage('Liste erstellt.');
     } catch (error) {
       logStorageError('create list ui', error);
-      setMessage(errorToMessage(error, 'Liste konnte nicht erstellt werden.'));
+      throw new Error(errorToMessage(error, 'Liste konnte nicht erstellt werden.'));
     }
   }
 
-  async function handleRenameList(list: TodoList) {
-    const name = window.prompt('Neuer Listenname', list.name);
-    if (!name) return;
+  function handleRenameList(list: TodoList) {
+    if (isDefaultList(list.id)) return;
+    setListSheet({ mode: 'rename', list });
+  }
+
+  async function saveRenamedList(list: TodoList, name: string) {
     try {
       const renamed = renameList(list, name);
       await saveList(renamed);
@@ -214,7 +225,7 @@ export function App() {
       setMessage('Liste umbenannt.');
     } catch (error) {
       logStorageError('rename list ui', error);
-      setMessage(errorToMessage(error, 'Liste konnte nicht umbenannt werden.'));
+      throw new Error(errorToMessage(error, 'Liste konnte nicht umbenannt werden.'));
     }
   }
 
@@ -266,6 +277,7 @@ export function App() {
   const fabDefaults: FormDefaults =
     selectedListId ? { listId: selectedListId } :
     smartView === 'today' ? { date: todayKey() } :
+    smartView === 'no-date' ? { date: null } :
     smartView === 'flagged' ? { flagged: true } :
     smartView === 'urgent' ? { priority: 'high' } :
     view === 'planned' ? { date: selectedDate } :
@@ -275,7 +287,9 @@ export function App() {
     <div className="app-shell">
       {loadError && <div className="top-error">{loadError}</div>}
       {view === 'dashboard' && !smartView && <DashboardView tasks={visibleTasks} lists={lists} onOpenSmartView={openSmartView} onOpenList={openList} />}
-      {smartView && view !== 'planned' && <SmartViewDetailView smartView={smartView} tasks={visibleTasks} lists={lists} {...taskActions} />}
+      {smartView && view !== 'planned' && (
+        <SmartViewDetailView smartView={smartView} tasks={visibleTasks} lists={lists} onCreate={(defaults = {}) => openCreate(defaults)} {...taskActions} />
+      )}
       {view === 'planned' && (
         <PlannedView tasks={visibleTasks} lists={lists} selectedDate={selectedDate} onSelectedDate={setSelectedDate} onAddForDate={(date) => openCreate({ date })} {...taskActions} />
       )}
@@ -319,6 +333,14 @@ export function App() {
           defaultPriority={formDefaults.priority}
           onSave={handleSave}
           onCancel={() => setFormOpen(false)}
+        />
+      )}
+      {listSheet && (
+        <ListFormSheet
+          mode={listSheet.mode}
+          initialName={listSheet.list?.name ?? ''}
+          onSave={(name) => (listSheet.mode === 'create' ? saveCreatedList(name) : saveRenamedList(listSheet.list, name))}
+          onCancel={() => setListSheet(null)}
         />
       )}
       {updateAvailable ? (

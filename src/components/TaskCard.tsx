@@ -1,8 +1,10 @@
-import { ArrowDown, ArrowUp, CalendarClock, FileText, Flag, Pencil, Repeat, Trash2 } from 'lucide-react';
+import { CalendarClock, Flag, MoreHorizontal, Repeat } from 'lucide-react';
+import { useState } from 'react';
 import { formatDateLabel } from '../domain/date-utils';
 import { TodoList } from '../domain/list-model';
 import { priorityLabel, Task } from '../domain/task-model';
 import { isOverdue } from '../domain/task-service';
+import { TaskActionSheet } from './TaskActionSheet';
 
 interface Props {
   task: Task;
@@ -16,72 +18,56 @@ interface Props {
 }
 
 export function TaskCard({ task, list, onToggle, onEdit, onDelete, onToggleFlag, onMoveSort, onMoveDate }: Props) {
+  const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const overdue = isOverdue(task);
+
   return (
-    <article className={`task-card ${task.status === 'done' ? 'task-card-done' : ''} ${overdue ? 'task-card-overdue' : ''}`}>
-      <button className="status-toggle" type="button" onClick={() => onToggle(task)} aria-label="Status wechseln">
-        <span aria-hidden="true">{task.status === 'done' ? '✓' : ''}</span>
-      </button>
-      <div className="task-content">
-        <h3>{task.title}</h3>
-        <div className="task-meta">
-          <span>
-            <CalendarClock size={14} aria-hidden="true" />
-            {formatDateLabel(task.dueDate)}
-            {task.dueTime ? ` · ${task.dueTime}` : ''}
-          </span>
-          {task.priority !== 'none' && <strong>{priorityLabel[task.priority]}</strong>}
-          {list && <strong>{list.name}</strong>}
-          {overdue && <strong className="danger-text">Ueberfaellig</strong>}
-        </div>
-        <div className="task-badges">
-          {task.isFlagged && (
-            <span>
-              <Flag size={13} aria-hidden="true" /> Markiert
-            </span>
-          )}
-          {task.recurrence?.enabled && (
-            <span>
-              <Repeat size={13} aria-hidden="true" /> Wiederholung
-            </span>
-          )}
-        </div>
-        {task.description && (
-          <p className="note-marker">
-            <FileText size={14} aria-hidden="true" />
-            Notiz vorhanden
-          </p>
-        )}
-        {onMoveDate && (
-          <label className="inline-date">
-            Verschieben
-            <input type="date" value={task.dueDate ?? ''} onChange={(event) => onMoveDate(task, event.target.value || null)} />
-          </label>
-        )}
-      </div>
-      <div className="card-actions">
-        {onMoveSort && (
-          <>
-            <button type="button" className="icon-button" onClick={() => onMoveSort(task, -1)} aria-label="Nach oben" title="Nach oben">
-              <ArrowUp size={16} aria-hidden="true" />
-            </button>
-            <button type="button" className="icon-button" onClick={() => onMoveSort(task, 1)} aria-label="Nach unten" title="Nach unten">
-              <ArrowDown size={16} aria-hidden="true" />
-            </button>
-          </>
-        )}
-        {onToggleFlag && (
-          <button type="button" className={`icon-button ${task.isFlagged ? 'strong' : ''}`} onClick={() => onToggleFlag(task)} aria-label="Markierung wechseln" title="Markieren">
-            <Flag size={17} aria-hidden="true" />
-          </button>
-        )}
-        <button type="button" className="icon-button" onClick={() => onEdit(task)} aria-label="Aufgabe bearbeiten" title="Bearbeiten">
-          <Pencil size={18} aria-hidden="true" />
+    <>
+      <article className={`task-card ${task.status === 'done' ? 'task-card-done' : ''} ${overdue ? 'task-card-overdue' : ''}`}>
+        <button className={`status-toggle ${task.status === 'done' ? 'status-toggle-done' : ''}`} type="button" onClick={() => onToggle(task)} aria-label="Status wechseln">
+          <span aria-hidden="true" />
         </button>
-        <button type="button" className="icon-button danger" onClick={() => onDelete(task)} aria-label="Aufgabe loeschen" title="Loeschen">
-          <Trash2 size={18} aria-hidden="true" />
+        <div className="task-content">
+          <h3>{task.title}</h3>
+          <div className="task-meta">
+            <span>
+              <CalendarClock size={14} aria-hidden="true" />
+              {formatDateLabel(task.dueDate)}
+              {task.dueTime ? ` - ${task.dueTime}` : ''}
+            </span>
+            {list && <strong>{list.name}</strong>}
+            {overdue && <strong className="danger-text">Ueberfaellig</strong>}
+          </div>
+          <div className="task-badges">
+            {task.priority !== 'none' && <span>{priorityLabel[task.priority]}</span>}
+            {task.isFlagged && (
+              <span>
+                <Flag size={13} aria-hidden="true" /> Markiert
+              </span>
+            )}
+            {task.recurrence?.enabled && (
+              <span>
+                <Repeat size={13} aria-hidden="true" /> Wiederholung
+              </span>
+            )}
+          </div>
+        </div>
+        <button type="button" className="more-button" onClick={() => setActionSheetOpen(true)} aria-label="Mehr Aktionen" title="Mehr">
+          <MoreHorizontal size={18} aria-hidden="true" />
+          <span>Mehr</span>
         </button>
-      </div>
-    </article>
+      </article>
+      {actionSheetOpen && (
+        <TaskActionSheet
+          task={task}
+          onClose={() => setActionSheetOpen(false)}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onToggleFlag={onToggleFlag}
+          onMoveSort={onMoveSort}
+          onMoveDate={onMoveDate}
+        />
+      )}
+    </>
   );
 }

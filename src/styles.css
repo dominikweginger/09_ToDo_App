@@ -142,7 +142,8 @@ button {
 
 .task-card {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: start;
   gap: 10px;
   padding: 12px;
 }
@@ -169,6 +170,11 @@ button {
   background: #fff;
   color: #2563eb;
   font-weight: 900;
+}
+
+.status-toggle-done {
+  border-color: #2563eb;
+  background: #2563eb;
 }
 
 .task-content {
@@ -209,6 +215,10 @@ button {
   font-size: 0.78rem;
 }
 
+.task-badges:empty {
+  display: none;
+}
+
 .task-meta strong {
   color: #1e293b;
 }
@@ -245,20 +255,127 @@ button {
   color: #dc2626;
 }
 
-.inline-date {
+.more-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  color: #64748b;
-  font-size: 0.82rem;
+  justify-content: center;
+  gap: 4px;
+  min-width: 42px;
+  min-height: 34px;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
-.inline-date input {
-  min-height: 36px;
+.action-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.38);
+}
+
+.action-sheet {
+  width: min(100%, 640px);
+  max-height: min(88vh, 720px);
+  overflow: auto;
+  border-radius: 8px;
+  background: #fff;
+  padding: 16px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.32);
+}
+
+.sheet-head p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.action-list,
+.action-section {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.action-list button,
+.sort-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  padding: 0 12px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.action-list .danger-action {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.action-section h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.sort-actions,
+.move-date-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.move-date-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.move-date-chips button {
+  min-height: 38px;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  padding: 0 10px;
+  font-weight: 800;
+}
+
+.move-date-input {
+  display: grid;
+  gap: 6px;
+  color: #334155;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.move-date-input input {
+  min-height: 44px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  padding: 0 8px;
+  padding: 0 10px;
+}
+
+.sheet-cancel {
+  width: 100%;
+  margin-top: 16px;
 }
 
 .calendar-grid {
@@ -319,6 +436,21 @@ button {
 .diagnostics-panel,
 .empty-state {
   padding: 18px;
+}
+
+.empty-state {
+  display: grid;
+  gap: 12px;
+}
+
+.empty-state p {
+  margin-top: 0;
+}
+
+.empty-state-action,
+.section-action {
+  width: 100%;
+  justify-content: center;
 }
 
 .overview-block,
@@ -406,6 +538,18 @@ button {
   box-shadow: 0 24px 80px rgba(15, 23, 42, 0.32);
 }
 
+.list-form-sheet {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 520px);
+  max-height: min(88vh, 620px);
+  overflow: auto;
+  border-radius: 8px;
+  background: #fff;
+  padding: 16px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.32);
+}
+
 .sheet-head,
 .sheet-actions {
   display: flex;
@@ -428,9 +572,27 @@ button {
   font-weight: 800;
 }
 
+.list-form-sheet label {
+  display: grid;
+  gap: 7px;
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
 .task-form input,
 .task-form textarea,
 .task-form select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  color: #172033;
+}
+
+.list-form-sheet input {
   width: 100%;
   min-height: 44px;
   border: 1px solid #cbd5e1;
@@ -590,12 +752,22 @@ button {
 }
 
 .segmented-control button {
+  min-width: 0;
   min-height: 38px;
   border: 0;
   border-radius: 8px;
   background: transparent;
   color: #475569;
   font-weight: 800;
+}
+
+.segmented-control.priority-segments {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.segmented-control.priority-segments button {
+  padding: 0 4px;
+  font-size: 0.82rem;
 }
 
 .segmented-control .segment-active {
@@ -619,6 +791,23 @@ button {
   color: #334155;
   padding: 0 10px;
   font-weight: 800;
+}
+
+.details-toggle {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 800;
+}
+
+.task-details {
+  display: grid;
+  gap: 0;
+  margin-top: 2px;
 }
 
 .check-row {

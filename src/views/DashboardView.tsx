@@ -1,4 +1,4 @@
-import { CalendarDays, Flag, Flame, Rows3, Sun } from 'lucide-react';
+import { CalendarDays, CalendarX, Flag, Flame, Rows3, Sun } from 'lucide-react';
 import { DashboardTile } from '../components/DashboardTile';
 import { ListRow } from '../components/ListRow';
 import { TodoList } from '../domain/list-model';
@@ -18,7 +18,8 @@ const tiles = [
   { key: 'this-week', label: 'Diese Woche', icon: Rows3 },
   { key: 'next-week', label: 'Naechste Woche', icon: CalendarDays },
   { key: 'flagged', label: 'Markiert', icon: Flag },
-  { key: 'urgent', label: 'Dringend', icon: Flame }
+  { key: 'urgent', label: 'Dringend', icon: Flame },
+  { key: 'no-date', label: 'Ohne Datum', icon: CalendarX }
 ] as const;
 
 export function DashboardView({ tasks, lists, onOpenSmartView, onOpenList }: Props) {

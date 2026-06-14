@@ -149,6 +149,63 @@ Begruendung:
 - Ein sichtbarer Neuladen-Hinweis vermeidet stille Versionswechsel waehrend der Nutzung.
 - IndexedDB-Daten sind nicht Teil des PWA-Caches und werden durch App-Updates nicht geloescht.
 
+### 15. Schnellerfassungsmodus fuer Aufgaben
+
+Entscheidung:
+- Neue Aufgaben starten im kompakten Modus mit Titel, Schnelldatum, Liste und Aktionen.
+- Notiz, Datumseingabe, Uhrzeit, Prioritaet, Status, Markierung und Wiederholung liegen im optionalen Details-Bereich.
+- Beim Bearbeiten wird der Details-Bereich automatisch geoeffnet, wenn optionale Daten vorhanden oder abweichend sind.
+
+Begruendung:
+- der wichtigste mobile Workflow ist schnelles Erfassen mit minimalem Scrollen
+- bestehende Aufgabenfelder und das Datenmodell bleiben unveraendert
+- Detaildaten bleiben weiterhin erreichbar und werden beim Bearbeiten nicht verdeckt verloren
+
+### 16. Mobile Aufgabenkarte
+
+Entscheidung:
+- Aufgaben zeigen direkt nur Status, Titel, Datum, optionalen Listenkontext, wichtige Badges und `Mehr`.
+- Bearbeiten, Markierung, Verschieben, Loeschen und optionale Sortierung liegen im Aktions-Sheet.
+- Schnelles Verschieben nutzt Chips fuer Heute, Morgen, Naechste Woche, Ohne Datum und Datum waehlen.
+
+Begruendung:
+- Karten bleiben auf Smartphone-Breite ruhiger und besser lesbar.
+- Sekundaeraktionen bleiben erreichbar, ohne die Standardkarte zu ueberladen.
+- Das bestehende Aufgabenmodell und `moveTaskToDate` bleiben unveraendert.
+
+### 17. Smart View Ohne Datum
+
+Entscheidung:
+- Aufgaben ohne Datum werden ueber die berechnete Smart View `Ohne Datum` sichtbar.
+- Die Ansicht ist ueber eine Dashboard-Kachel erreichbar, aber nicht Teil der Hauptnavigation.
+- Neue Aufgaben aus dieser Ansicht erhalten kein automatisches Datum.
+
+Begruendung:
+- undatierte offene Aufgaben werden planbar, ohne die alte Inbox als Hauptnavigation zurueckzubringen.
+- Das bestehende Aufgabenmodell bleibt unveraendert.
+
+### 18. Heute-Ansicht und ueberfaellige Aufgaben
+
+Entscheidung:
+- Die Smart View `Heute` zeigt ueberfaellige und heutige Aufgaben weiterhin gemeinsam im Heute-Kontext, trennt sie aber visuell in eigene Abschnitte.
+- Aufgaben ohne Datum werden in `Heute` nicht als Aufgabenliste eingeblendet, sondern ueber einen Hinweis und eine Aktion zur Smart-View-Logik `Ohne Datum` abgegrenzt.
+
+Begruendung:
+- ueberfaellige Aufgaben bleiben sichtbar, ohne in der heutigen Aufgabenliste unterzugehen.
+- der Tageskontext bleibt fokussiert auf Aufgaben mit faelligem Datum.
+- das bestehende Aufgabenmodell und die Smart-View-Fachlogik bleiben unveraendert.
+
+### 19. Listenformular als App-Sheet
+
+Entscheidung:
+- Listen erstellen und umbenennen erfolgt ueber ein mobiles App-Sheet statt ueber native Browser-Prompts.
+- Die bestehende Listenlogik aus `list-service` bleibt die Validierungs- und Normalisierungsgrundlage.
+
+Begruendung:
+- mobile Nutzung bleibt konsistent innerhalb der App-Oberflaeche
+- Validierungsfehler koennen direkt im Kontext des Formulars angezeigt werden
+- Datenmodell, Backup-Schema und lokale Persistenz bleiben unveraendert
+
 ## Offene Entscheidungen
 
 1. Hosting-Ziel der PWA

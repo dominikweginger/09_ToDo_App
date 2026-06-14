@@ -47,7 +47,7 @@ export function ListDetailView({ list, tasks, onAdd, ...actions }: Props) {
         ]}
       />
       {visibleTasks.length === 0 ? (
-        <EmptyState title="Keine Aufgaben" text="Lege eine Aufgabe direkt in dieser Liste an." />
+        <EmptyState title="Keine Aufgaben" text="Lege eine Aufgabe direkt in dieser Liste an." actionLabel="Aufgabe in dieser Liste erstellen" onAction={onAdd} />
       ) : (
         <div className="task-list">
           {visibleTasks.map((task) => (

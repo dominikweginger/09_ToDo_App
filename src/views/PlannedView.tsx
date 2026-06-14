@@ -29,19 +29,29 @@ export function PlannedView({ tasks, lists, selectedDate, onSelectedDate, onAddF
   const today = todayKey();
   const tomorrow = addDays(today, 1);
   const nextWeekAnchor = addDays(today, 7);
-  const laterBoundary = addDays(today, 14);
   const week = weekDays(selectedDate);
   const openDatedTasks = tasks.filter((task) => task.status === 'open' && task.dueDate);
 
   const sections = useMemo(
-    () => [
-      { title: 'Heute', tasks: openDatedTasks.filter((task) => task.dueDate === today) },
-      { title: 'Morgen', tasks: openDatedTasks.filter((task) => task.dueDate === tomorrow) },
-      { title: 'Diese Woche', tasks: openDatedTasks.filter((task) => task.dueDate !== today && task.dueDate !== tomorrow && isInWeek(task.dueDate, today)) },
-      { title: 'Naechste Woche', tasks: openDatedTasks.filter((task) => isInWeek(task.dueDate, nextWeekAnchor)) },
-      { title: 'Spaeter', tasks: openDatedTasks.filter((task) => task.dueDate! > laterBoundary) }
-    ],
-    [openDatedTasks, today, tomorrow, nextWeekAnchor, laterBoundary]
+    () => {
+      const overdueTasks = openDatedTasks.filter((task) => task.dueDate! < today);
+      const todayTasks = openDatedTasks.filter((task) => task.dueDate === today);
+      const tomorrowTasks = openDatedTasks.filter((task) => task.dueDate === tomorrow);
+      const thisWeekTasks = openDatedTasks.filter((task) => task.dueDate! > tomorrow && isInWeek(task.dueDate, today));
+      const nextWeekTasks = openDatedTasks.filter((task) => task.dueDate !== tomorrow && isInWeek(task.dueDate, nextWeekAnchor));
+      const plannedTaskIds = new Set([...overdueTasks, ...todayTasks, ...tomorrowTasks, ...thisWeekTasks, ...nextWeekTasks].map((task) => task.id));
+      const laterTasks = openDatedTasks.filter((task) => !plannedTaskIds.has(task.id) && task.dueDate! > today);
+
+      return [
+        { title: 'Ueberfaellig', tasks: overdueTasks },
+        { title: 'Heute', tasks: todayTasks },
+        { title: 'Morgen', tasks: tomorrowTasks },
+        { title: 'Diese Woche', tasks: thisWeekTasks },
+        { title: 'Naechste Woche', tasks: nextWeekTasks },
+        { title: 'Spaeter', tasks: laterTasks }
+      ];
+    },
+    [openDatedTasks, today, tomorrow, nextWeekAnchor]
   );
 
   return (
@@ -98,7 +108,12 @@ export function PlannedView({ tasks, lists, selectedDate, onSelectedDate, onAddF
             </button>
           </div>
           {tasks.filter((task) => task.dueDate === selectedDate && task.status === 'open').length === 0 ? (
-            <EmptyState title="Keine Aufgaben an diesem Tag" text="Lege eine Aufgabe fuer den ausgewaehlten Tag an." />
+            <EmptyState
+              title="Keine Aufgaben an diesem Tag"
+              text="Lege eine Aufgabe fuer den ausgewaehlten Tag an."
+              actionLabel="Aufgabe fuer diesen Tag erstellen"
+              onAction={() => onAddForDate(selectedDate)}
+            />
           ) : (
             <div className="task-list">
               {sortTasks(tasks.filter((task) => task.dueDate === selectedDate && task.status === 'open')).map((task) => (

@@ -5,6 +5,7 @@ import { DEFAULT_LIST_ID, TodoList } from '../domain/list-model';
 import { priorityLabel, Task, TaskDraft } from '../domain/task-model';
 import { validateTaskDraft } from '../domain/task-validation';
 import { addDays, startOfWeek } from '../domain/week-utils';
+import { SegmentedControl } from './SegmentedControl';
 
 interface Props {
   task: Task | null;
@@ -28,6 +29,24 @@ const emptyDraft: TaskDraft = {
   recurrence: null,
   status: 'open'
 };
+
+const priorityOptions = Object.entries(priorityLabel).map(([key, label]) => ({
+  key: key as TaskDraft['priority'],
+  label
+}));
+
+function hasOpenDetails(task: Task | null) {
+  if (!task) return false;
+
+  return Boolean(
+    task.description?.trim() ||
+      task.dueTime ||
+      task.priority !== 'none' ||
+      task.status !== 'open' ||
+      task.isFlagged ||
+      task.recurrence?.enabled
+  );
+}
 
 export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagged, defaultPriority, onSave, onCancel }: Props) {
   const initialDraft = useMemo<TaskDraft>(
@@ -55,6 +74,7 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
   );
   const [draft, setDraft] = useState<TaskDraft>(initialDraft);
   const [errors, setErrors] = useState<string[]>([]);
+  const [detailsOpen, setDetailsOpen] = useState(() => hasOpenDetails(task));
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -95,10 +115,13 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
           Titel
           <input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} autoFocus />
         </label>
-        <label>
-          Notiz
-          <textarea value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} rows={4} />
-        </label>
+        <div className="quick-actions" aria-label="Schnelldatum">
+          <button type="button" onClick={() => setQuickDate('today')}>Heute</button>
+          <button type="button" onClick={() => setQuickDate('tomorrow')}>Morgen</button>
+          <button type="button" onClick={() => setQuickDate('this-week')}>Diese Woche</button>
+          <button type="button" onClick={() => setQuickDate('next-week')}>Naechste Woche</button>
+          <button type="button" onClick={() => setQuickDate('none')}>Ohne Datum</button>
+        </div>
         <label>
           Liste
           <select value={draft.listId} onChange={(event) => setDraft({ ...draft, listId: event.target.value })}>
@@ -109,98 +132,101 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
             ))}
           </select>
         </label>
-        <div className="quick-actions" aria-label="Schnelldatum">
-          <button type="button" onClick={() => setQuickDate('today')}>Heute</button>
-          <button type="button" onClick={() => setQuickDate('tomorrow')}>Morgen</button>
-          <button type="button" onClick={() => setQuickDate('this-week')}>Diese Woche</button>
-          <button type="button" onClick={() => setQuickDate('next-week')}>Naechste Woche</button>
-          <button type="button" onClick={() => setQuickDate('none')}>Ohne Datum</button>
-        </div>
-        <div className="form-grid">
-          <label>
-            Datum
-            <input type="date" value={draft.dueDate} onChange={(event) => setDraft({ ...draft, dueDate: event.target.value })} />
-          </label>
-          <label>
-            Uhrzeit
-            <input type="time" value={draft.dueTime} onChange={(event) => setDraft({ ...draft, dueTime: event.target.value })} />
-          </label>
-        </div>
-        <div className="form-grid">
-          <label>
-            Prioritaet
-            <select value={draft.priority} onChange={(event) => setDraft({ ...draft, priority: event.target.value as TaskDraft['priority'] })}>
-              {Object.entries(priorityLabel).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Status
-            <select value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value as TaskDraft['status'] })}>
-              <option value="open">Offen</option>
-              <option value="done">Erledigt</option>
-            </select>
-          </label>
-        </div>
-        <label className="check-row">
-          <input type="checkbox" checked={draft.isFlagged} onChange={(event) => setDraft({ ...draft, isFlagged: event.target.checked })} />
-          Markiert
-        </label>
-        <label className="check-row">
-          <input
-            type="checkbox"
-            checked={recurrenceEnabled}
-            onChange={(event) =>
-              setDraft({
-                ...draft,
-                recurrence: event.target.checked ? { enabled: true, frequency: 'daily', interval: 1, endDate: null, advanceMode: 'scheduledDate' } : null
-              })
-            }
-          />
-          Wiederholung
-        </label>
-        {recurrenceEnabled && (
-          <div className="form-grid">
+        <button type="button" className="details-toggle" onClick={() => setDetailsOpen((open) => !open)} aria-expanded={detailsOpen}>
+          {detailsOpen ? 'Details ausblenden' : 'Details anzeigen'}
+        </button>
+
+        {detailsOpen && (
+          <div className="task-details">
             <label>
-              Rhythmus
-              <select
-                value={draft.recurrence?.frequency ?? 'daily'}
-                onChange={(event) =>
-                  setDraft({
-                    ...draft,
-                    recurrence: {
-                      ...(draft.recurrence ?? { enabled: true, interval: 1, advanceMode: 'scheduledDate' }),
-                      frequency: event.target.value as NonNullable<TaskDraft['recurrence']>['frequency']
-                    }
-                  })
-                }
-              >
-                <option value="daily">Taeglich</option>
-                <option value="weekly">Woechentlich</option>
-                <option value="monthly">Monatlich</option>
-                <option value="yearly">Jaehrlich</option>
-              </select>
+              Notiz
+              <textarea value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} rows={3} />
+            </label>
+            <div className="form-grid">
+              <label>
+                Datum
+                <input type="date" value={draft.dueDate} onChange={(event) => setDraft({ ...draft, dueDate: event.target.value })} />
+              </label>
+              <label>
+                Uhrzeit
+                <input type="time" value={draft.dueTime} onChange={(event) => setDraft({ ...draft, dueTime: event.target.value })} />
+              </label>
+            </div>
+            <label>
+              Prioritaet
+              <SegmentedControl
+                value={draft.priority}
+                options={priorityOptions}
+                onChange={(priority) => setDraft({ ...draft, priority })}
+                ariaLabel="Prioritaet"
+                className="priority-segments"
+              />
             </label>
             <label>
-              Intervall
+              Status
+              <select value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value as TaskDraft['status'] })}>
+                <option value="open">Offen</option>
+                <option value="done">Erledigt</option>
+              </select>
+            </label>
+            <label className="check-row">
+              <input type="checkbox" checked={draft.isFlagged} onChange={(event) => setDraft({ ...draft, isFlagged: event.target.checked })} />
+              Markiert
+            </label>
+            <label className="check-row">
               <input
-                type="number"
-                min="1"
-                value={draft.recurrence?.interval ?? 1}
+                type="checkbox"
+                checked={recurrenceEnabled}
                 onChange={(event) =>
                   setDraft({
                     ...draft,
-                    recurrence: {
-                      ...(draft.recurrence ?? { enabled: true, frequency: 'daily', advanceMode: 'scheduledDate' }),
-                      interval: Number(event.target.value) || 1
-                    }
+                    recurrence: event.target.checked ? { enabled: true, frequency: 'daily', interval: 1, endDate: null, advanceMode: 'scheduledDate' } : null
                   })
                 }
               />
+              Wiederholung
             </label>
+            {recurrenceEnabled && (
+              <div className="form-grid">
+                <label>
+                  Rhythmus
+                  <select
+                    value={draft.recurrence?.frequency ?? 'daily'}
+                    onChange={(event) =>
+                      setDraft({
+                        ...draft,
+                        recurrence: {
+                          ...(draft.recurrence ?? { enabled: true, interval: 1, advanceMode: 'scheduledDate' }),
+                          frequency: event.target.value as NonNullable<TaskDraft['recurrence']>['frequency']
+                        }
+                      })
+                    }
+                  >
+                    <option value="daily">Taeglich</option>
+                    <option value="weekly">Woechentlich</option>
+                    <option value="monthly">Monatlich</option>
+                    <option value="yearly">Jaehrlich</option>
+                  </select>
+                </label>
+                <label>
+                  Intervall
+                  <input
+                    type="number"
+                    min="1"
+                    value={draft.recurrence?.interval ?? 1}
+                    onChange={(event) =>
+                      setDraft({
+                        ...draft,
+                        recurrence: {
+                          ...(draft.recurrence ?? { enabled: true, frequency: 'daily', advanceMode: 'scheduledDate' }),
+                          interval: Number(event.target.value) || 1
+                        }
+                      })
+                    }
+                  />
+                </label>
+              </div>
+            )}
           </div>
         )}
         <div className="sheet-actions">

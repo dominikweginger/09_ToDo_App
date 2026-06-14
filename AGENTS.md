@@ -19,12 +19,11 @@
 
 Bei Widersprüchen gilt:
 
-1. MASTER_BLUEPRINT.md
-2. PRD.md
-3. TECHNICAL_SPEC.md
-4. IMPLEMENTATION_PLAN.md
-5. TEST_PLAN.md
-6. README.md
+1. PRD.md
+2. TECHNICAL_SPEC.md
+3. IMPLEMENTATION_PLAN.md
+4. TEST_PLAN.md
+5. README.md
 
 ## Nicht automatisch umsetzen
 
