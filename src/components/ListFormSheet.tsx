@@ -1,12 +1,14 @@
 import { FormEvent, useEffect, useId, useState } from 'react';
 import { X } from 'lucide-react';
+import { ListDraft } from '../domain/list-model';
 
-type Mode = 'create' | 'rename';
+type Mode = 'create' | 'edit';
 
 interface Props {
   mode: Mode;
   initialName?: string;
-  onSave: (name: string) => Promise<void> | void;
+  initialIsChecklist?: boolean;
+  onSave: (draft: ListDraft) => Promise<void> | void;
   onCancel: () => void;
 }
 
@@ -15,18 +17,21 @@ function unknownErrorToMessage(error: unknown): string {
   return 'Liste konnte nicht gespeichert werden.';
 }
 
-export function ListFormSheet({ mode, initialName = '', onSave, onCancel }: Props) {
+export function ListFormSheet({ mode, initialName = '', initialIsChecklist = false, onSave, onCancel }: Props) {
   const nameId = useId();
+  const checklistId = useId();
   const titleId = useId();
   const [name, setName] = useState(initialName);
+  const [isChecklist, setIsChecklist] = useState(initialIsChecklist);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setName(initialName);
+    setIsChecklist(initialIsChecklist);
     setError(null);
     setIsSaving(false);
-  }, [initialName, mode]);
+  }, [initialName, initialIsChecklist, mode]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,7 +44,7 @@ export function ListFormSheet({ mode, initialName = '', onSave, onCancel }: Prop
     try {
       setIsSaving(true);
       setError(null);
-      await onSave(normalizedName);
+      await onSave({ name: normalizedName, isChecklist });
       onCancel();
     } catch (saveError) {
       setError(unknownErrorToMessage(saveError));
@@ -47,7 +52,7 @@ export function ListFormSheet({ mode, initialName = '', onSave, onCancel }: Prop
     }
   }
 
-  const title = mode === 'create' ? 'Neue Liste' : 'Liste umbenennen';
+  const title = mode === 'create' ? 'Neue Liste' : 'Liste bearbeiten';
 
   return (
     <div className="sheet-backdrop" onClick={onCancel}>
@@ -77,6 +82,12 @@ export function ListFormSheet({ mode, initialName = '', onSave, onCancel }: Prop
             autoComplete="off"
           />
         </label>
+
+        <label className="check-row" htmlFor={checklistId}>
+          <input id={checklistId} type="checkbox" checked={isChecklist} onChange={(event) => setIsChecklist(event.target.checked)} />
+          <span>Checkliste</span>
+        </label>
+        <p className="muted-line">Aufgaben ohne Datum aus dieser Liste werden nur in der Liste angezeigt.</p>
 
         {error && (
           <div className="error-box" role="alert">

@@ -1,10 +1,13 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_LIST_ID } from '../domain/list-model';
+import { DEFAULT_LIST_ID, TodoList } from '../domain/list-model';
 import { Task } from '../domain/task-model';
 import { SmartViewDetailView } from './SmartViewDetailView';
 
-const lists = [{ id: DEFAULT_LIST_ID, name: 'Allgemein', color: '#2563eb', sortOrder: 0, createdAt: '2026-06-14T08:00:00.000Z', updatedAt: '2026-06-14T08:00:00.000Z' }];
+const lists: TodoList[] = [
+  { id: DEFAULT_LIST_ID, name: 'Allgemein', color: '#2563eb', isChecklist: false, createdAt: '2026-06-14T08:00:00.000Z', updatedAt: '2026-06-14T08:00:00.000Z' },
+  { id: 'checklist', name: 'Einkauf', color: null, isChecklist: true, createdAt: '2026-06-14T08:00:00.000Z', updatedAt: '2026-06-14T08:00:00.000Z' }
+];
 
 function task(overrides: Partial<Task> = {}): Task {
   return {
@@ -40,6 +43,31 @@ afterEach(() => {
 });
 
 describe('SmartViewDetailView', () => {
+  it.each([
+    ['no-date', { dueDate: null }, { dueDate: null }],
+    ['flagged', { dueDate: null, isFlagged: true }, { dueDate: '2026-06-20', isFlagged: true }],
+    ['urgent', { dueDate: null, priority: 'high' }, { dueDate: '2026-06-20', priority: 'high' }]
+  ] as const)('filters undated checklist tasks from %s while preserving eligible tasks', (smartView, hiddenOverrides, visibleChecklistOverrides) => {
+    render(
+      <SmartViewDetailView
+        smartView={smartView}
+        tasks={[
+          task({ id: 'normal', title: 'Normale Aufgabe', dueDate: null, isFlagged: true, priority: 'high' }),
+          task({ id: 'hidden', title: 'Undatierte Checklistenaufgabe', listId: 'checklist', ...hiddenOverrides }),
+          task({ id: 'dated', title: 'Datierte Checklistenaufgabe', listId: 'checklist', ...visibleChecklistOverrides })
+        ]}
+        lists={lists}
+        onCreate={vi.fn()}
+        {...actions}
+      />
+    );
+
+    expect(screen.getByText('Normale Aufgabe')).toBeInTheDocument();
+    expect(screen.queryByText('Undatierte Checklistenaufgabe')).not.toBeInTheDocument();
+    if (smartView === 'no-date') expect(screen.queryByText('Datierte Checklistenaufgabe')).not.toBeInTheDocument();
+    else expect(screen.getByText('Datierte Checklistenaufgabe')).toBeInTheDocument();
+  });
+
   it('separates overdue and today tasks in the today smart view', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 5, 14, 10, 0, 0));
@@ -49,7 +77,7 @@ describe('SmartViewDetailView', () => {
         smartView="today"
         tasks={[
           task({ id: 'overdue', title: 'Ueberfaellige Aufgabe', dueDate: '2026-06-13' }),
-          task({ id: 'today', title: 'Heutige Aufgabe', dueDate: '2026-06-14' }),
+          task({ id: 'today', title: 'Heutige Aufgabe', listId: 'checklist', dueDate: '2026-06-14' }),
           task({ id: 'no-date', title: 'Undatierte Aufgabe', dueDate: null })
         ]}
         lists={lists}

@@ -2,7 +2,9 @@
 
 ## Ziel
 
-Diese Spezifikation beschreibt die mobile Benutzeroberflaeche von SoloTodo V2 nach CR_001.
+Diese Spezifikation beschreibt die aktuell implementierte mobile Benutzeroberflaeche von SoloTodo V2 nach CR_003.
+
+Status: **kanonische UI-Spezifikation** (18.07.2026).
 
 ## Grundprinzipien
 
@@ -42,9 +44,10 @@ Vorauswahl:
 
 Inhalt:
 - Titel `SoloTodo`
-- sechs Smart-View-Kacheln: Heute, Geplant, Diese Woche, Naechste Woche, Markiert, Dringend
+- sieben Smart-View-Kacheln: Heute, Geplant, Diese Woche, Naechste Woche, Markiert, Dringend, Ohne Datum
 - jede Kachel zeigt Icon, Label und offene Anzahl
 - Bereich `Meine Listen` mit offenen Aufgaben je Liste
+- Smart-View-Zahlen blenden undatierte Checklistenaufgaben aus; die Zaehler unter `Meine Listen` zeigen sie weiterhin in ihrer eigenen Liste
 
 ## Geplant
 
@@ -65,7 +68,14 @@ Die Listenuebersicht zeigt:
 - Nutzerlisten
 - Anzahl offener Aufgaben
 - neue Liste erstellen
-- Nutzerlisten umbenennen und loeschen
+- Nutzerlisten bearbeiten und loeschen
+
+Das Listenformular bietet beim Erstellen und Bearbeiten:
+- Listenname
+- Checkbox `Checkliste`
+- Hilfetext `Aufgaben ohne Datum aus dieser Liste werden nur in der Liste angezeigt.`
+
+Beim Erstellen ist die Checkbox aus. Beim Bearbeiten sind Name und Checklistenstatus vorausgefuellt. `Allgemein` kann nicht ueber das Formular bearbeitet werden.
 
 ## Listendetail
 
@@ -76,6 +86,15 @@ Offen | Erledigt | Markiert
 ```
 
 Erledigte Aufgaben sind standardmaessig ausgeblendet.
+
+Auch undatierte Checklistenaufgaben bleiben hier in den passenden Filtern sichtbar. Der globale Checklistenfilter gilt nicht fuer die eigene Liste.
+
+## Mehr und Alle Aufgaben
+
+- `Mehr` bietet Backup-Export, bestaetigten Import, App-Version und Speicherdiagnose.
+- Die angezeigte Backup-Anzahl umfasst alle an `Mehr` uebergebenen, nicht archivierten Tasks.
+- `Alle Aufgaben` zeigt offene und erledigte, aber keine archivierten Tasks; undatierte Checklistenaufgaben sind dort ausgeblendet.
+- Export und Import werden durch die Checklisten-Darstellungsfilterung nicht eingeschraenkt. Archivierte Records liegen bereits ausserhalb des an `Mehr` uebergebenen Bestands und werden daher nicht exportiert.
 
 ## Aufgabenkarte
 

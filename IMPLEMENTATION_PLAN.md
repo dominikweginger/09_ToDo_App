@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Dieses Dokument beschreibt den aktuellen Umsetzungsstand nach CR_001. Die Umsetzung erfolgte als Big-Bang-Change in kleinen technischen Teilbereichen.
+Dieses Dokument beschreibt den abgeschlossenen Umsetzungsstand von SoloTodo V2 bis CR_003. Es ist kein Zukunftsplan. Neue Vorhaben benoetigen einen eigenen Change Request und duerfen die geltenden Entscheidungen nicht stillschweigend aendern.
 
 ## Abgeschlossen mit CR_001
 
@@ -24,6 +24,23 @@ Dieses Dokument beschreibt den aktuellen Umsetzungsstand nach CR_001. Die Umsetz
 16. Service-Worker-Cache-Version erhoeht.
 17. Projektdokumentation an den neuen Stand angepasst.
 
+## Abgeschlossen mit CR_003
+
+1. `TodoList` um das normalisierte Pflichtfeld `isChecklist` und das Formularobjekt `ListDraft` erweitert.
+2. Listenerstellung und -bearbeitung einschliesslich Schutz der Default-Liste umgesetzt.
+3. Eine zentrale Sichtbarkeitsfunktion fuer undatierte Checklistenaufgaben eingefuehrt.
+4. Dashboard-Smart-Zaehlung, Smart-View-Details und `Alle Aufgaben` angebunden; eigene Listen und Listenzaehler unveraendert gelassen.
+5. Persistenz und Backup v2 rueckwaertskompatibel normalisiert, ohne DB- oder Backup-Schemamigration.
+6. Fokussierte Domain-, Formular-, View-, Persistenz- und Backup-Regressionstests ergaenzt.
+
+## Change-Request-Status
+
+- `CR_001`: **Umgesetzt**; SoloTodo V2 mit Dashboard, Listen, Smart Views, Planung, Wiederholung und Backup v2.
+- `CR_002`: **Teilweise umgesetzt**; die umgesetzten UX-Verbesserungen sind im Changelog einzeln benannt, nicht umgesetzte Ideen bleiben Vorschlaege.
+- `CR_003`: **Umgesetzt** am 18.07.2026; Checklistenmetadatum, zentrale Sichtbarkeit und kompatibles Backupverhalten.
+
+Siehe `docs/CHANGELOG.md` fuer die kanonische Historie und Verweise.
+
 ## Nicht umgesetzt, weil explizit nicht im Scope
 
 - Backend
@@ -43,6 +60,8 @@ Dieses Dokument beschreibt den aktuellen Umsetzungsstand nach CR_001. Die Umsetz
 - `npm test`
 - `npm run build`
 - Browser-Smoke-Test auf `http://127.0.0.1:5173`
+
+Letzte dokumentierte automatische Pruefung am 18.07.2026: `npm test` mit 15 Testdateien und 68 bestandenen Tests; `npm run build` erfolgreich. Daraus wird kein nicht ausgefuehrter Mobile-/Offline-Smoke abgeleitet.
 
 ## Verbleibende technische Detailentscheidungen
 

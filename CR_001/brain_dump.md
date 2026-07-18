@@ -1,3 +1,5 @@
+> **Historischer Brain Dump zu CR_001.** Diese Ideensammlung ist nicht normativ; der aktuelle Stand steht in `../PRD.md` und `../docs/CHANGELOG.md`.
+
 **Design-Brief**
 
 SoloTodo soll wie „Apple Reminders light“ wirken: schnell, ruhig, kachelbasiert, mit klaren Smart Views und darunter eigenen Listen. Es soll aber nicht wie ein iOS-Klon aussehen, sondern eine eigene lokale PWA-Identität bekommen: weniger iOS-Glas, etwas neutraler, klare mobile Web-App, starke Lesbarkeit, keine unnötigen Spielereien.

@@ -2,7 +2,7 @@ import { TodoList, createDefaultList } from '../domain/list-model';
 import { Task } from '../domain/task-model';
 import { validateImportedTask } from '../domain/task-validation';
 import { normalizeTask } from '../domain/task-service';
-import { ensureDefaultList } from '../domain/list-service';
+import { ensureDefaultList, normalizeList } from '../domain/list-service';
 import { db, openStorageDatabase } from './db';
 import { logStorageError, toStorageError } from './storage-errors';
 
@@ -97,10 +97,12 @@ function normalizeLists(lists: unknown[]): TodoList[] {
       id: list.id!,
       name: list.name!,
       color: list.color ?? null,
+      isChecklist: list.isChecklist === true,
       createdAt: list.createdAt ?? now,
       updatedAt: list.updatedAt ?? now
-    }));
-  return normalized.some((list) => list.id === createDefaultList().id) ? normalized : [createDefaultList(), ...normalized];
+    }))
+    .map(normalizeList);
+  return ensureDefaultList(normalized);
 }
 
 function readFileText(file: File): Promise<string> {

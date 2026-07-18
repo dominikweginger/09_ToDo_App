@@ -5,6 +5,7 @@ import { TodoList } from '../domain/list-model';
 import { SmartViewKey, getSmartViewTasks, smartViewLabels } from '../domain/smart-view-service';
 import { Task } from '../domain/task-model';
 import { sortTasks } from '../domain/task-service';
+import { getTasksVisibleOutsideOwnList } from '../domain/task-visibility-service';
 
 interface Props {
   smartView: SmartViewKey;
@@ -19,11 +20,12 @@ interface Props {
 }
 
 export function SmartViewDetailView({ smartView, tasks, lists, onCreate, ...actions }: Props) {
-  const visibleTasks = getSmartViewTasks(tasks, smartView);
+  const globallyVisibleTasks = getTasksVisibleOutsideOwnList(tasks, lists);
+  const visibleTasks = getSmartViewTasks(globallyVisibleTasks, smartView);
   const today = todayKey();
 
   if (smartView === 'today') {
-    const openTasks = tasks.filter((task) => task.status === 'open');
+    const openTasks = globallyVisibleTasks.filter((task) => task.status === 'open');
     const overdueTasks = sortTasks(openTasks.filter((task) => task.dueDate && task.dueDate < today));
     const todayTasks = sortTasks(openTasks.filter((task) => task.dueDate === today));
 

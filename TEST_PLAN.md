@@ -2,7 +2,9 @@
 
 ## Ziel
 
-Der Testplan prueft SoloTodo V2 nach CR_001 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Smart Views, Backup v2 und mobile Bedienbarkeit.
+Der Testplan prueft den aktuellen Stand von SoloTodo V2 nach CR_003 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Checklisten-Sichtbarkeit, Smart Views, Backup v2 und mobile Bedienbarkeit.
+
+Status: **aktuelle kanonische Test- und Smoke-Referenz** (18.07.2026).
 
 ## Automatisierte Tests
 
@@ -12,6 +14,8 @@ Ausfuehren:
 npm test
 npm run build
 ```
+
+Zuletzt am 18.07.2026 ausgefuehrt: 15 Testdateien / 68 Tests bestanden; Produktionsbuild erfolgreich. Manuelle Mobile-, Persistenz- und Offline-Schritte sind davon getrennt und werden nur als erfolgreich gewertet, wenn sie tatsaechlich ausgefuehrt wurden.
 
 Abgedeckt:
 - Task-Erstellung mit Default-Liste
@@ -31,6 +35,12 @@ Abgedeckt:
 - StorageError-Codes bei Speicherfehlern
 - `createId()` ohne `crypto.randomUUID`
 - Speicherdiagnose ohne Ausgabe von Aufgabeninhalten
+- Listenerstellung und -bearbeitung mit Checklistenstatus und Default-Listenschutz
+- zentrale Checklisten-Sichtbarkeitsmatrix, mehrere Checklisten und unbekannte Listen-IDs
+- globale Smart-View-Zaehlung bei unveraenderten Listenzaehlern
+- eigene Listendetailansicht mit offenen, erledigten und markierten undatierten Checklistenaufgaben
+- `Alle Aufgaben` bei unveraenderter Backup-Anzahl und Exportaktion
+- Backup-v2-Roundtrip, alte/ungueltige `isChecklist`-Werte und vollstaendiger Task-Export
 
 ## Smoke Tests
 
@@ -47,7 +57,10 @@ Abgedeckt:
 
 - `Allgemein` existiert automatisch.
 - Neue Liste erstellen.
-- Liste umbenennen.
+- Liste bearbeiten und Checklistenstatus wechseln.
+- Checkliste erstellen; undatierte Aufgabe bleibt in der Liste und verschwindet aus `Ohne Datum`, `Markiert`, `Dringend` und `Alle Aufgaben`.
+- Datum setzen und entfernen; globale Sichtbarkeit aendert sich sofort.
+- Listentyp und Listenzuordnung wechseln; Views und Zaehler reagieren sofort, ohne Task-Migration.
 - Nicht leere Liste loeschen und Bestaetigung mit Aufgabenanzahl pruefen.
 - `Allgemein` kann nicht geloescht werden.
 - Aufgabe einer Liste zuordnen.
@@ -93,6 +106,9 @@ Abgedeckt:
 - Import ersetzt Tasks und Listen atomar.
 - Nach Import existiert `Allgemein`.
 - Ungueltige Backups zerstoeren keine lokalen Daten.
+- Alte v2-Listen ohne `isChecklist` werden normal; nur echtes `true` bleibt Checkliste und `Allgemein` bleibt `false`.
+- Undatierte Checklistenaufgaben bleiben vollstaendig im Export enthalten.
+- Bekannte Einschraenkung pruefen/dokumentieren: Der UI-Export erhaelt von `App.tsx` nur nicht archivierte Tasks; archivierte Records sind nicht Teil der erzeugten Datei.
 
 ## Speicherdiagnose
 

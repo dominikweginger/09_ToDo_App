@@ -4,7 +4,7 @@ import { DEFAULT_LIST_ID } from '../domain/list-model';
 import { Task } from '../domain/task-model';
 import { TaskForm } from './TaskForm';
 
-const lists = [{ id: DEFAULT_LIST_ID, name: 'Allgemein', color: '#2563eb', sortOrder: 0, createdAt: '2026-06-14T08:00:00.000Z', updatedAt: '2026-06-14T08:00:00.000Z' }];
+const lists = [{ id: DEFAULT_LIST_ID, name: 'Allgemein', color: '#2563eb', isChecklist: false, sortOrder: 0, createdAt: '2026-06-14T08:00:00.000Z', updatedAt: '2026-06-14T08:00:00.000Z' }];
 
 function task(overrides: Partial<Task> = {}): Task {
   return {

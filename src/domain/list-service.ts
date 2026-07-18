@@ -1,30 +1,43 @@
-import { DEFAULT_LIST_ID, TodoList, createDefaultList } from './list-model';
+import { DEFAULT_LIST_ID, ListDraft, TodoList, createDefaultList } from './list-model';
 import { createId } from './id-service';
 
 export function ensureDefaultList(lists: TodoList[]): TodoList[] {
-  const byId = new Map(lists.map((list) => [list.id, list]));
-  if (!byId.has(DEFAULT_LIST_ID)) return [createDefaultList(), ...lists];
-  return lists;
+  const normalized = lists.map(normalizeList);
+  if (!normalized.some((list) => list.id === DEFAULT_LIST_ID)) return [createDefaultList(), ...normalized];
+  return normalized;
 }
 
-export function createList(name: string): TodoList {
-  const normalized = name.trim();
-  if (!normalized) throw new Error('Der Listenname ist erforderlich.');
+export function normalizeList(list: TodoList): TodoList {
+  return {
+    ...list,
+    isChecklist: list.id === DEFAULT_LIST_ID ? false : list.isChecklist === true
+  };
+}
+
+export function createList(draft: ListDraft): TodoList {
+  const normalizedName = draft.name.trim();
+  if (!normalizedName) throw new Error('Der Listenname ist erforderlich.');
   const now = new Date().toISOString();
   return {
     id: createId(),
-    name: normalized,
+    name: normalizedName,
     color: null,
+    isChecklist: draft.isChecklist === true,
     createdAt: now,
     updatedAt: now
   };
 }
 
-export function renameList(list: TodoList, name: string): TodoList {
-  const normalized = name.trim();
-  if (!normalized) throw new Error('Der Listenname ist erforderlich.');
+export function updateList(list: TodoList, draft: ListDraft): TodoList {
+  const normalizedName = draft.name.trim();
+  if (!normalizedName) throw new Error('Der Listenname ist erforderlich.');
   if (list.id === DEFAULT_LIST_ID) return list;
-  return { ...list, name: normalized, updatedAt: new Date().toISOString() };
+  return {
+    ...list,
+    name: normalizedName,
+    isChecklist: draft.isChecklist === true,
+    updatedAt: new Date().toISOString()
+  };
 }
 
 export function isDefaultList(listId: string): boolean {

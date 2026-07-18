@@ -7,12 +7,12 @@ interface Props {
   tasks: Task[];
   lists: TodoList[];
   onCreateList: () => void;
-  onRenameList: (list: TodoList) => void;
+  onEditList: (list: TodoList) => void;
   onDeleteList: (list: TodoList) => void;
   onOpenList: (listId: string) => void;
 }
 
-export function ListsView({ tasks, lists, onCreateList, onRenameList, onDeleteList, onOpenList }: Props) {
+export function ListsView({ tasks, lists, onCreateList, onEditList, onDeleteList, onOpenList }: Props) {
   return (
     <section className="view">
       <header className="view-header row-header">
@@ -31,7 +31,7 @@ export function ListsView({ tasks, lists, onCreateList, onRenameList, onDeleteLi
             list={list}
             count={tasks.filter((task) => task.listId === list.id && task.status === 'open').length}
             onOpen={() => onOpenList(list.id)}
-            onRename={() => onRenameList(list)}
+            onEdit={() => onEditList(list)}
             onDelete={() => onDeleteList(list)}
           />
         ))}

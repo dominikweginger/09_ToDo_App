@@ -1,37 +1,40 @@
-# CONSISTENCY_CHECK.md
+# Dokumentations-Konsistenzcheck
+
+Stand: 18.07.2026
 
 ## Ergebnis
 
-Die erzeugten Projektdokumente sind konsistent zum bereitgestellten MASTER_BLUEPRINT.md.
+Die zentralen Projektdokumente wurden nach der abgeschlossenen CR_003-Implementierung mit dem aktuellen Code, den fokussierten Tests und dem Build abgeglichen. Der aktuelle Funktions-, Datenmodell-, Sichtbarkeits- und Backup-Stand ist in den kanonischen Quellen konsistent beschrieben.
 
-## Bewusst konsistent gehaltene Punkte
+## Kanonische Quellen
 
-- App-Typ: PWA
-- Zielgerät: Smartphone / mobile-first
-- Datenhaltung: lokal
-- Backend: nicht vorgesehen
-- Login: nicht vorgesehen
-- Cloud-Synchronisierung: nicht vorgesehen
-- MVP-Fokus: Aufgabenverwaltung, Heute, Kalender, Inbox, Import/Export, Offline-Fähigkeit
+- Produkt: `PRD.md`
+- Technik: `TECHNICAL_SPEC.md`
+- Umsetzungsstand: `IMPLEMENTATION_PLAN.md`
+- Tests und Smokes: `TEST_PLAN.md`
+- Einstieg: `README.md`
+- Detailreferenzen: `docs/DATA_MODEL.md`, `docs/UI_SPEC.md`, `docs/DECISIONS.md`
+- Historie und CR-Status: `docs/CHANGELOG.md`
 
-## Offene Risiken
+## Bereinigte Altstaende
 
-1. Der konkrete Frontend-Stack ist noch offen.
-2. Die Entscheidung IndexedDB direkt vs. Dexie.js ist noch offen.
-3. Die Importlogik Ersetzen vs. Zusammenführen ist noch offen.
-4. PWA-Offlinetests müssen auf dem Zielgerät durchgeführt werden.
-5. „Nur auf meinem Handy“ ist im MVP kein echter technischer Zugriffsschutz.
+- Die fruehere Aussage, Framework, Dexie-Nutzung und Importstrategie seien offen, ist ersetzt: React/Vite/TypeScript, Dexie/IndexedDB und bestaetigter atomarer Replace-Import sind implementiert.
+- Die alte Navigation `Heute | Kalender | Inbox | Mehr` und Backup v1 bleiben nur im historischen `master_blueprint.md` erhalten.
+- Die aktuelle Navigation ist `Dashboard | Geplant | Listen | Mehr`; `Ohne Datum` ist eine von sieben Smart Views.
+- CR_003 ist umgesetzt, nicht mehr `zur Umsetzung freigegeben`; Execution Spec, Testreferenz und Goal-Prompt sind historische Ausfuehrungsunterlagen.
+- Die historische Kurzform „alle Tasks im Backup“ ist fuer den UI-Flow praezisiert: Checklisten werden nicht gefiltert, archivierte Records gehoeren aber schon vor CR_003 nicht zum uebergebenen Exportbestand.
 
-## Potenzielle Überschneidungen
+## Verifikation
 
-- PRD.md und MASTER_BLUEPRINT.md enthalten beide Produktziele. PRD.md ist aber die ausführende Produkt-Spezifikation.
-- TECHNICAL_SPEC.md und docs/DATA_MODEL.md überschneiden sich beim Datenmodell. docs/DATA_MODEL.md ist die detailliertere Referenz.
-- IMPLEMENTATION_PLAN.md und docs/PROMPTS.md überschneiden sich bei Phasen. docs/PROMPTS.md dient der direkten Codex-Ausführung.
+- `npm test`: 15 Testdateien, 68 Tests bestanden (18.07.2026)
+- `npm run build`: erfolgreich (18.07.2026)
+- kein manueller Mobile-/Offline-Smoke im Rahmen dieser Dokumentationsbereinigung behauptet
 
-## Empfehlung
+## Verbleibende offene Entscheidungen
 
-Vor der ersten Codex-Implementierung sollten drei Entscheidungen getroffen werden:
+- Hosting-Ziel
+- Mindest-Browser-/Android-Version
+- moegliche spaetere lokale Erinnerungen
+- moegliche spaetere PIN-Sperre
 
-1. Frontend-Stack
-2. Datenbankzugriff direkt oder über Wrapper
-3. Importlogik
+Diese Punkte sind keine implementierten Funktionen und aendern die aktuellen Nicht-Ziele nicht.

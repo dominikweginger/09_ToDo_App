@@ -1,5 +1,7 @@
 # docs/PROMPTS.md
 
+> **Nicht normative Prompt-Sammlung.** Die Beispiele sind Hilfsmittel fuer kuenftige Arbeiten und beschreiben keinen aktuellen Implementierungsauftrag. Aktuelle Regeln stehen in `../PRD.md`, `../TECHNICAL_SPEC.md` und `CHANGELOG.md`.
+
 ## Zweck
 
 Dieses Dokument enthaelt nutzbare Prompts fuer Codex, um SoloTodo V2 zu pruefen und in spaeteren Changes kontrolliert weiterzuentwickeln.

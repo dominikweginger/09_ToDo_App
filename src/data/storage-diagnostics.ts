@@ -54,6 +54,7 @@ export async function runStorageDiagnostics(appVersion: string): Promise<Storage
         id: diagnosticId,
         name: 'Diagnose',
         color: null,
+        isChecklist: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });

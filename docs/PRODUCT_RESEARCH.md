@@ -1,5 +1,7 @@
 # PRODUCT_RESEARCH.md
 
+> **Historische Research-Unterlage (Stand 10.06.2026).** Empfehlungen und Zukunftsideen in diesem Dokument sind nicht automatisch umgesetzt oder verbindlich. Fuer den aktuellen Stand gelten `../PRD.md` und `CHANGELOG.md`.
+
 Stand: 2026-06-10  
 Projekt: `09_ToDo_App` / SoloTodo PWA  
 Ziel: Fachliche Grundlage für die sinnvolle Weiterentwicklung der bestehenden lokalen, offlinefähigen ToDo-PWA.  

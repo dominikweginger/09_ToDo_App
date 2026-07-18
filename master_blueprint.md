@@ -1,5 +1,7 @@
 # MASTER_BLUEPRINT.md
 
+> **Historische Ursprungsspezifikation.** Dieses Dokument bewahrt die urspruengliche Projektidee, den vorgeschlagenen MVP-Umfang und damalige offene Entscheidungen. Es ist keine aktuelle Produktspezifikation. Der geltende Stand steht in `PRD.md`, `TECHNICAL_SPEC.md` und `docs/CHANGELOG.md`.
+
 ## 1. Projektname
 
 **Arbeitstitel:** SoloTodo PWA

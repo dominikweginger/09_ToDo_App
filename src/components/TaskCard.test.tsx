@@ -6,7 +6,7 @@ import { Task } from '../domain/task-model';
 import { addDays } from '../domain/week-utils';
 import { TaskCard } from './TaskCard';
 
-const list = { id: DEFAULT_LIST_ID, name: 'Allgemein', color: '#2563eb', sortOrder: 0, createdAt: '2026-06-14T08:00:00.000Z', updatedAt: '2026-06-14T08:00:00.000Z' };
+const list = { id: DEFAULT_LIST_ID, name: 'Allgemein', color: '#2563eb', isChecklist: false, sortOrder: 0, createdAt: '2026-06-14T08:00:00.000Z', updatedAt: '2026-06-14T08:00:00.000Z' };
 
 function task(overrides: Partial<Task> = {}): Task {
   return {

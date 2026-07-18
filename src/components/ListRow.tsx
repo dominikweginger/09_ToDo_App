@@ -5,11 +5,11 @@ interface Props {
   list: TodoList;
   count: number;
   onOpen: () => void;
-  onRename?: () => void;
+  onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export function ListRow({ list, count, onOpen, onRename, onDelete }: Props) {
+export function ListRow({ list, count, onOpen, onEdit, onDelete }: Props) {
   const isDefault = list.id === DEFAULT_LIST_ID;
   return (
     <article className="list-row">
@@ -20,8 +20,8 @@ export function ListRow({ list, count, onOpen, onRename, onDelete }: Props) {
         <ChevronRight size={18} aria-hidden="true" />
       </button>
       <div className="list-actions">
-        {!isDefault && onRename && (
-          <button type="button" className="icon-button" onClick={onRename} aria-label="Liste umbenennen" title="Umbenennen">
+        {!isDefault && onEdit && (
+          <button type="button" className="icon-button" onClick={onEdit} aria-label="Liste bearbeiten" title="Bearbeiten">
             <Pencil size={16} aria-hidden="true" />
           </button>
         )}

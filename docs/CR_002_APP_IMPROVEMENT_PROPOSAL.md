@@ -1,5 +1,7 @@
 # CR_002 App Improvement Proposal
 
+**Status: Teilweise umgesetzt (historischer Change Request).** Abschlussstand: Commit `e6549b7` vom 14.06.2026. Umgesetzt wurden kompakte Schnellerfassung, entschlackte Task-Karten/Aktions-Sheet, Schnellverschieben, `Ohne Datum`, die Heute-Gliederung und das Listen-App-Sheet. Die vorgeschlagene Undo-Logik und weitere nicht realisierte Ideen bleiben historische Vorschlaege. Kanonischer Ist-Stand: [`CHANGELOG.md`](CHANGELOG.md), [`../PRD.md`](../PRD.md) und [`../TECHNICAL_SPEC.md`](../TECHNICAL_SPEC.md).
+
 Stand: 13.06.2026
 
 ## Grundlage

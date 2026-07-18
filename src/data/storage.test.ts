@@ -45,11 +45,22 @@ describe('Dexie storage', () => {
   });
 
   it('saves and loads lists while ensuring the default list', async () => {
-    await saveList({ id: 'work', name: 'Arbeit', color: null, createdAt: '2026-06-11T00:00:00.000Z', updatedAt: '2026-06-11T00:00:00.000Z' });
+    await saveList({ id: 'work', name: 'Arbeit', color: null, isChecklist: false, createdAt: '2026-06-11T00:00:00.000Z', updatedAt: '2026-06-11T00:00:00.000Z' });
 
     const lists = await getAllLists();
 
     expect(lists).toEqual(expect.arrayContaining([expect.objectContaining({ id: DEFAULT_LIST_ID }), expect.objectContaining({ id: 'work' })]));
+  });
+
+  it('normalizes legacy checklist metadata on read and persists the correction', async () => {
+    await openStorageDatabase();
+    await db.lists.put({ id: 'legacy', name: 'Alt', color: null, createdAt: '2026-06-11T00:00:00.000Z', updatedAt: '2026-06-11T00:00:00.000Z' } as never);
+
+    const lists = await getAllLists();
+
+    expect(lists.find((list) => list.id === 'legacy')?.isChecklist).toBe(false);
+    expect((await db.lists.get('legacy'))?.isChecklist).toBe(false);
+    expect((await db.lists.get(DEFAULT_LIST_ID))?.isChecklist).toBe(false);
   });
 
   it('replaces tasks and lists atomically during import', async () => {

@@ -1,5 +1,7 @@
 # TECHNICAL_SPEC.md
 
+Status: **aktuelle kanonische technische Spezifikation nach CR_003** (18.07.2026). Historische Execution Specs dokumentieren die jeweilige Umsetzung, sind aber nicht mehr auszufuehren.
+
 ## Zielarchitektur
 
 SoloTodo PWA ist eine mobile-first React/Vite/TypeScript-App. Sie laeuft vollstaendig im Browser, speichert lokal per Dexie in IndexedDB und nutzt `vite-plugin-pwa` fuer App-Shell und Updates.
@@ -24,9 +26,10 @@ SoloTodo PWA ist eine mobile-first React/Vite/TypeScript-App. Sie laeuft vollsta
 ### Domain Layer
 
 - `task-model.ts`: Task, Prioritaet, Status und Wiederholungsmodell
-- `list-model.ts`: Listenmodell und Default-Liste
+- `list-model.ts`: Listenmodell mit `isChecklist`, `ListDraft` und Default-Liste
 - `task-service.ts`: Erstellen, Aktualisieren, Sortieren, Statuswechsel
-- `list-service.ts`: Erstellen, Umbenennen, Default-Liste sicherstellen
+- `list-service.ts`: Erstellen, Bearbeiten, Normalisieren und Default-Liste sicherstellen
+- `task-visibility-service.ts`: zentrale, listenbasierte Sichtbarkeit ausserhalb der eigenen Liste
 - `smart-view-service.ts`: berechnete Smart Views
 - `recurrence-service.ts`: einfache Wiederholungsberechnung
 - `week-utils.ts`: Montag-bis-Sonntag-Wochenlogik
@@ -60,6 +63,7 @@ UI-Aktion
 - Store `lists`
 - Bestehende Daten aus der direkten IndexedDB-Implementierung werden durch denselben Datenbanknamen und dieselben Stores weiterverwendet.
 - Keine Migration darf Stores oder Records automatisch loeschen.
+- `isChecklist` ist ein nicht indexiertes Feld im bestehenden Listenrecord; DB-Version, Stores und Indizes bleiben unveraendert.
 - Ein unrettbarer lokaler Zustand fuehrt zu Diagnose und Nutzerhinweis, nicht zu stillem Reset.
 
 ## Speicherfehler
@@ -76,15 +80,34 @@ Export:
 - enthaelt `exportedAt`
 - enthaelt `tasks`
 - enthaelt `lists`
+- enthaelt den von `App.tsx` uebergebenen nicht archivierten Task-Bestand vollstaendig, einschliesslich undatierter Checklistenaufgaben
+- archivierte Task-Records werden vom aktuellen UI-Exporthandler nicht uebergeben
 
 Import:
 - akzeptiert nur Schema-Version 2
 - prueft JSON, Tasks und Listen
 - verlangt gueltige `listId`-Referenzen
 - stellt `Allgemein` sicher
+- normalisiert `isChecklist` nur bei echtem `true`; `Allgemein` wird immer auf `false` gesetzt
 - ersetzt lokale Daten erst nach Bestaetigung
 - ersetzt Tasks und Listen atomar in einer Dexie-Transaktion
 - ungueltige Backups veraendern bestehende lokale Daten nicht
+
+## Checklisten-Sichtbarkeit
+
+- `getTasksVisibleOutsideOwnList(tasks, lists)` ist die einzige globale Sichtbarkeitsregel.
+- Nur undatierte Tasks aus Listen mit `isChecklist === true` werden global ausgeblendet.
+- Datierte Tasks, normale Listen und unbekannte `listId`-Werte bleiben global zulaessig.
+- Smart Views und `Alle Aufgaben` verwenden den gefilterten Bestand; Listendetails, Listenzaehler und Backup verwenden den vollstaendigen Bestand.
+- Eine Aenderung des Listentyps schreibt oder migriert keine Tasks.
+
+### Verbraucher der zentralen Regel
+
+- `DashboardView`: filtert nur den Task-Bestand fuer Smart-View-Zahlen; Listenwerte werden aus allen offenen Tasks berechnet.
+- `SmartViewDetailView`: filtert vor der bestehenden Smart-View-Berechnung.
+- `SettingsView`: filtert innerhalb seiner Props nur die Darstellung `Alle Aufgaben`; Backup-Anzahl und Exportcallback verwenden alle uebergebenen Tasks. `App.tsx` uebergibt dabei bereits den nicht archivierten Bestand.
+- `ListDetailView` und `ListsView`: verwenden bewusst keinen globalen Filter.
+- `PlannedView` und `CalendarView`: benoetigen keine Sonderlogik, weil ihre relevanten Tasks datiert sind.
 
 ## Offline-Verhalten
 
@@ -104,3 +127,21 @@ Import:
 - keine Cloud-Datenbank
 - kein Kalender-Sync
 - keine nativen Apps
+
+## Projektstruktur und Befehle
+
+- `src/app/`: App-State, Navigation und Handler
+- `src/components/`: wiederverwendbare UI-Komponenten und Sheets
+- `src/views/`: Haupt-, Listen- und Smart-View-Ansichten
+- `src/domain/`: Modelle und reine Fachlogik
+- `src/data/`: Dexie, Repositories, Backup und Diagnose
+- `src/tests/`: Test-Setup; fachnahe Tests liegen neben den Modulen
+
+```bash
+npm run dev
+npm test
+npm run build
+npm run preview
+```
+
+Es existieren keine konfigurierten Lint-, E2E- oder Datenbankmigrationsbefehle. Manuelle Mobile-/Offline-Smokes sind im `TEST_PLAN.md` beschrieben.

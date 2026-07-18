@@ -4,6 +4,7 @@ import { ListRow } from '../components/ListRow';
 import { TodoList } from '../domain/list-model';
 import { SmartViewKey, getSmartViewCounts } from '../domain/smart-view-service';
 import { Task } from '../domain/task-model';
+import { getTasksVisibleOutsideOwnList } from '../domain/task-visibility-service';
 
 interface Props {
   tasks: Task[];
@@ -23,7 +24,7 @@ const tiles = [
 ] as const;
 
 export function DashboardView({ tasks, lists, onOpenSmartView, onOpenList }: Props) {
-  const counts = getSmartViewCounts(tasks);
+  const counts = getSmartViewCounts(getTasksVisibleOutsideOwnList(tasks, lists));
   return (
     <section className="view">
       <header className="view-header">

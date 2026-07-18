@@ -1,4 +1,4 @@
-import { createDefaultList } from '../domain/list-model';
+import { DEFAULT_LIST_ID } from '../domain/list-model';
 import { ensureDefaultList } from '../domain/list-service';
 import { StoredList, db, openStorageDatabase } from './db';
 import { logStorageError, toStorageError } from './storage-errors';
@@ -8,7 +8,9 @@ export async function getAllLists(): Promise<StoredList[]> {
     await openStorageDatabase();
     const storedLists = await db.lists.toArray();
     const lists = ensureDefaultList(storedLists);
-    if (!storedLists.some((list) => list.id === createDefaultList().id)) await db.lists.put(createDefaultList());
+    const storedById = new Map(storedLists.map((list) => [list.id, list]));
+    const needsNormalization = lists.some((list) => storedById.get(list.id)?.isChecklist !== list.isChecklist);
+    if (needsNormalization || !storedById.has(DEFAULT_LIST_ID)) await db.lists.bulkPut(lists);
     return lists;
   } catch (error) {
     const storageError = toStorageError('DB_READ_FAILED', 'Listen konnten nicht gelesen werden.', error);

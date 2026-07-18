@@ -1,82 +1,70 @@
 # SoloTodo PWA
 
-## Zweck
+SoloTodo ist eine mobile-first To-Do-PWA fuer eine einzelne Person. Aufgaben und Listen werden ausschliesslich lokal im Browser in IndexedDB gespeichert. Nach dem ersten erfolgreichen Laden ist die App offline nutzbar; Backend, Login und Cloud-Synchronisierung sind bewusst nicht vorgesehen.
 
-SoloTodo PWA ist eine persoenliche, mobile To-Do-App fuer einen einzelnen Nutzer. Die App speichert Aufgaben und Listen lokal im Browserkontext, funktioniert nach dem ersten Laden offline und verzichtet bewusst auf Backend, Login und Cloud-Synchronisierung.
+## Aktueller Stand
 
-## Projektstatus
+Status: **SoloTodo V2, CR_001 bis CR_003 umgesetzt** (Dokumentationsstand 18.07.2026).
 
-Status: **SoloTodo V2 / CR_001 umgesetzt**
-
-Umgesetzt:
-- React + Vite + TypeScript als mobile-first PWA
-- lokale Persistenz in IndexedDB mit Stores fuer Aufgaben und Listen
 - Hauptnavigation: `Dashboard | Geplant | Listen | Mehr`
-- Dashboard mit Smart-View-Kacheln und Meine-Listen-Bereich
+- sieben Smart Views: Heute, Geplant, Diese Woche, Naechste Woche, Markiert, Dringend und Ohne Datum
 - echte Listen mit fixer Default-Liste `Allgemein`
-- Aufgaben mit Liste, Datum, Uhrzeit, Prioritaet, Markierung, Notiz und einfacher Wiederholung
-- Smart Views fuer Heute, Geplant, Diese Woche, Naechste Woche, Markiert und Dringend
-- Geplant-Ansicht mit Liste, Wochenuebersicht und integrierter Kalenderansicht
-- JSON-Export und JSON-Import mit Backup-Schema v2 fuer Tasks und Listen
-- Service Worker und Web App Manifest fuer Offline-Nutzung nach erstem Laden
-- Tests fuer Domain-Logik, Wiederholungen und Backup-Import/Export
+- optionale Checklisten: undatierte Aufgaben sind nur in der eigenen Checkliste und deren Zaehlern sichtbar; sobald sie ein Datum haben, gelten die normalen globalen Regeln
+- Aufgaben mit Liste, Datum, Uhrzeit, Prioritaet, Markierung, Notiz, Status, manueller Sortierung und einfacher Wiederholung
+- Geplant-Ansicht mit gruppierter Liste, Wochenuebersicht und Kalender
+- JSON-Backup/Import mit Schema v2 fuer nicht archivierte Tasks und alle Listen
+- PWA-App-Shell und sichtbarer Update-Hinweis
+- lokale Speicherdiagnose ohne Ausgabe von Aufgabeninhalten
 
-## Nicht-Ziele
+Die vollstaendigen geltenden Produktregeln stehen in [PRD.md](PRD.md), der technische Ist-Stand in [TECHNICAL_SPEC.md](TECHNICAL_SPEC.md). Datenmodell und UI sind in [docs/DATA_MODEL.md](docs/DATA_MODEL.md) und [docs/UI_SPEC.md](docs/UI_SPEC.md) beschrieben. Entwicklung und CR-Status stehen in [docs/CHANGELOG.md](docs/CHANGELOG.md).
 
-- Kein Login
-- Keine Cloud-Synchronisierung
-- Kein Backend
-- Keine externe Kalenderintegration
-- Keine Push Notifications
-- Keine KI-Funktionen
-- Keine Teamfunktionen
-- Kein Kanban-Board
-- Keine native Android- oder iOS-App
-- Kein Dark Mode
-- Keine Suche in dieser Version
+## Projektursprung und Identitaet
 
-## Setup
+Das Repository wurde als persoenliche, kalenderorientierte Offline-To-Do-App fuer die Smartphone-Nutzung angelegt. Der urspruengliche Projektordner und die Repository-ID lauten `09_ToDo_App`; das dokumentierte Remote-Repository lautet `dominikweginger/09_ToDo_App`. Der Arbeitstitel und heutige Produktname sind `SoloTodo PWA`, die npm-Paket-ID ist `solotodo-pwa`, der PWA-Kurzname `SoloTodo` und die lokale IndexedDB-ID `solotodo-db`.
 
-Voraussetzung:
-- Node.js mit npm
+Der urspruengliche, vor der Umsetzung entstandene Umfang ist unveraendert in [master_blueprint.md](master_blueprint.md) erhalten. Er ist eine historische Ursprungsspezifikation und beschreibt nicht den heutigen Funktionsumfang.
 
-Installation:
+## Setup und Pruefung
+
+Voraussetzung: Node.js mit npm.
 
 ```bash
 npm install
-```
-
-Entwicklungsserver:
-
-```bash
 npm run dev
 ```
 
-Produktionsbuild:
-
-```bash
-npm run build
-```
-
-Tests:
+Der Entwicklungsserver bindet an `http://127.0.0.1:5173` (oder den naechsten freien Vite-Port).
 
 ```bash
 npm test
+npm run build
+npm run preview
 ```
+
+`npm test` fuehrt die Vitest-Suite aus. `npm run build` prueft TypeScript mit `tsc --noEmit` und erzeugt danach den Vite/PWA-Produktionsbuild.
+
+## Backup und lokale Daten
+
+- Exportiert werden alle nicht archivierten Tasks im App-Bestand und alle Listen, insbesondere auch undatierte Checklistenaufgaben. Bereits archivierte Records werden vom aktuellen App-Handler nicht an den Export uebergeben.
+- Import akzeptiert ausschliesslich Backup-Schema v2, validiert Tasks, Listen und `listId`-Referenzen und ersetzt die lokalen Daten erst nach Bestaetigung atomar.
+- Alte v2-Listen ohne `isChecklist` bleiben kompatibel und werden als normale Listen geladen.
+- `Allgemein` wird bei Laden und Import sichergestellt und kann weder geloescht noch als Checkliste markiert werden.
+- Browserdaten sind die einzige primaere Datenquelle. Vor dem Entfernen einer installierten PWA oder dem Loeschen von Browserdaten sollte ein Backup exportiert werden.
 
 ## Installierte PWA aktualisieren
 
-Bei einem neuen Deployment prueft die App beim Start und beim Zurueckwechseln in den Vordergrund auf eine neue Version. Wenn ein Update aktiv ist, erscheint der Hinweis `Neue Version verfuegbar. Neu laden.`. Tippe darauf, um die installierte PWA mit der neuen App-Shell neu zu laden.
+Beim Start und beim Zurueckkehren in den Vordergrund prueft die App auf eine neue App-Shell. Der Hinweis `Neue Version verfuegbar. Neu laden.` aktiviert sie. Falls weiterhin eine alte Version erscheint: App vollstaendig schliessen, die App-URL im Browser neu laden und erst als letzte Massnahme die PWA entfernen und neu installieren. Lokale Daten vorher sichern.
 
-Falls ein Handy trotzdem eine alte Version zeigt:
-- App vollstaendig schliessen und erneut oeffnen.
-- Im Browser die App-URL einmal normal oeffnen und neu laden.
-- Bei hartnaeckigem Cache: installierte PWA entfernen und erneut zum Startbildschirm hinzufuegen. Lokale Aufgaben liegen im Browserkontext; vor dem Entfernen bei Bedarf ein JSON-Backup exportieren.
+## Nicht-Ziele und bekannte Einschraenkungen
 
-## Technische Entscheidungen
+- kein Backend, Login oder Cloud-Sync
+- keine externe Kalenderintegration, Push Notifications oder nativen Apps
+- keine KI-, Team-, Freigabe- oder Kanban-Funktionen
+- keine Suche, kein Dark Mode, keine komplexe RRULE-Engine
+- kein harter Zugriffsschutz; lokale Daten koennen durch Browserdaten-Loeschung verloren gehen
+- Offline-Nutzung setzt voraus, dass die App-Shell zuvor erfolgreich geladen wurde
+- der UI-Backup-Export schliesst archivierte Task-Records nicht ein
 
-- Frontend-Stack: React + Vite + TypeScript
-- Lokale Datenbank: IndexedDB direkt
-- Importlogik: Backup ersetzt lokale Tasks und Listen erst nach expliziter Bestaetigung
-- Default-Liste: `Allgemein` ist fix vorhanden und nicht loeschbar
-- Wiederholungen: Beim Abhaken wird dieselbe Aufgabe auf das naechste Faelligkeitsdatum verschoben
+## Kanonische Dokumente
+
+Die kuenftig massgeblichen Quellen und ihre Prioritaet sind in [PRD.md](PRD.md) und [docs/CHANGELOG.md](docs/CHANGELOG.md) festgelegt. Change Requests, Execution Specs, Testreferenzen, Goal-Prompts, Brain Dumps, Research- und Blueprint-Dateien sind historische Unterlagen; sie aendern den aktuellen Stand nicht rueckwirkend.

@@ -8,8 +8,8 @@ import { deleteList as deleteStoredList, getAllLists, saveList } from '../data/l
 import { deleteTask, deleteTasksByListId, getAllTasks, saveTask } from '../data/task-repository';
 import { isStorageError, logStorageError, storageErrorToUserMessage } from '../data/storage-errors';
 import { todayKey } from '../domain/date-utils';
-import { DEFAULT_LIST_ID, TodoList } from '../domain/list-model';
-import { createList, ensureDefaultList, isDefaultList, renameList } from '../domain/list-service';
+import { DEFAULT_LIST_ID, ListDraft, TodoList } from '../domain/list-model';
+import { createList, ensureDefaultList, isDefaultList, updateList } from '../domain/list-service';
 import { SmartViewKey } from '../domain/smart-view-service';
 import { Task, TaskDraft } from '../domain/task-model';
 import { createTask, moveTaskToDate, normalizeTask, toggleTaskDone, updateTask } from '../domain/task-service';
@@ -31,7 +31,7 @@ type FormDefaults = {
 
 type ListSheetState =
   | { mode: 'create'; list: null }
-  | { mode: 'rename'; list: TodoList };
+  | { mode: 'edit'; list: TodoList };
 
 function errorToMessage(error: unknown, fallback: string): string {
   if (isStorageError(error)) return storageErrorToUserMessage(error);
@@ -200,9 +200,9 @@ export function App() {
     setListSheet({ mode: 'create', list: null });
   }
 
-  async function saveCreatedList(name: string) {
+  async function saveCreatedList(draft: ListDraft) {
     try {
-      const list = createList(name);
+      const list = createList(draft);
       await saveList(list);
       setLists((current) => [...current, list]);
       setMessage('Liste erstellt.');
@@ -212,20 +212,20 @@ export function App() {
     }
   }
 
-  function handleRenameList(list: TodoList) {
+  function handleEditList(list: TodoList) {
     if (isDefaultList(list.id)) return;
-    setListSheet({ mode: 'rename', list });
+    setListSheet({ mode: 'edit', list });
   }
 
-  async function saveRenamedList(list: TodoList, name: string) {
+  async function saveEditedList(list: TodoList, draft: ListDraft) {
     try {
-      const renamed = renameList(list, name);
-      await saveList(renamed);
-      setLists((current) => current.map((item) => (item.id === renamed.id ? renamed : item)));
-      setMessage('Liste umbenannt.');
+      const updated = updateList(list, draft);
+      await saveList(updated);
+      setLists((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+      setMessage('Liste bearbeitet.');
     } catch (error) {
-      logStorageError('rename list ui', error);
-      throw new Error(errorToMessage(error, 'Liste konnte nicht umbenannt werden.'));
+      logStorageError('edit list ui', error);
+      throw new Error(errorToMessage(error, 'Liste konnte nicht bearbeitet werden.'));
     }
   }
 
@@ -294,7 +294,7 @@ export function App() {
         <PlannedView tasks={visibleTasks} lists={lists} selectedDate={selectedDate} onSelectedDate={setSelectedDate} onAddForDate={(date) => openCreate({ date })} {...taskActions} />
       )}
       {view === 'lists' && !selectedListId && (
-        <ListsView tasks={visibleTasks} lists={lists} onCreateList={handleCreateList} onRenameList={handleRenameList} onDeleteList={handleDeleteList} onOpenList={openList} />
+        <ListsView tasks={visibleTasks} lists={lists} onCreateList={handleCreateList} onEditList={handleEditList} onDeleteList={handleDeleteList} onOpenList={openList} />
       )}
       {view === 'lists' && selectedListId && currentList && (
         <ListDetailView list={currentList} tasks={visibleTasks} onAdd={() => openCreate({ listId: currentList.id })} onMoveSort={handleMoveSort} {...taskActions} />
@@ -339,7 +339,8 @@ export function App() {
         <ListFormSheet
           mode={listSheet.mode}
           initialName={listSheet.list?.name ?? ''}
-          onSave={(name) => (listSheet.mode === 'create' ? saveCreatedList(name) : saveRenamedList(listSheet.list, name))}
+          initialIsChecklist={listSheet.list?.isChecklist ?? false}
+          onSave={(draft) => (listSheet.mode === 'create' ? saveCreatedList(draft) : saveEditedList(listSheet.list, draft))}
           onCancel={() => setListSheet(null)}
         />
       )}

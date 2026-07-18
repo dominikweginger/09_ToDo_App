@@ -1,5 +1,7 @@
 # docs/DECISIONS.md
 
+Status: **kanonisches Entscheidungsprotokoll** (18.07.2026). Die Entscheidungen 1 bis 20 gelten, soweit sie nicht in diesem Dokument ausdruecklich als ersetzt oder offen markiert sind.
+
 ## Getroffene Entscheidungen
 
 ### 1. App-Typ
@@ -206,6 +208,20 @@ Begruendung:
 - Validierungsfehler koennen direkt im Kontext des Formulars angezeigt werden
 - Datenmodell, Backup-Schema und lokale Persistenz bleiben unveraendert
 
+### 20. Checkliste als Listenmetadatum und zentrale globale Sichtbarkeit
+
+Entscheidung:
+- Checklisten werden ausschliesslich durch `TodoList.isChecklist: boolean` beschrieben.
+- Eine zentrale Domain-Funktion blendet undatierte Checklistenaufgaben ausserhalb ihrer eigenen Liste aus.
+- Eigene Listendetails, Listenzaehler und Backup-Export verwenden weiterhin alle Aufgaben.
+- `Allgemein` wird immer als normale Liste normalisiert.
+
+Begruendung:
+- Aufgabenmodell, Status- und Abhaklogik bleiben einheitlich.
+- Eine zentrale Regel verhindert widerspruechliches Verhalten zwischen globalen Views.
+- Das nicht indexierte Zusatzfeld erfordert weder eine neue DB-Version noch eine Task-Migration.
+- Backup-Schema v2 bleibt kompatibel; die Checklistenregel entfernt keine zusaetzlichen Aufgaben aus dem bisherigen nicht archivierten Exportumfang.
+
 ## Offene Entscheidungen
 
 1. Hosting-Ziel der PWA
@@ -215,7 +231,7 @@ Begruendung:
 
 ## Bewusst verworfene oder verschobene Ideen
 
-Nicht in CR_001:
+Nicht im aktuellen Stand bis einschliesslich CR_003:
 - native Android-App
 - iOS-App
 - Cloud-Sync

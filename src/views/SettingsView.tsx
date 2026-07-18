@@ -5,6 +5,7 @@ import { runStorageDiagnostics } from '../data/storage-diagnostics';
 import { TodoList } from '../domain/list-model';
 import { Task } from '../domain/task-model';
 import { sortTasks } from '../domain/task-service';
+import { getTasksVisibleOutsideOwnList } from '../domain/task-visibility-service';
 
 interface Props {
   tasks: Task[];
@@ -31,7 +32,7 @@ export function SettingsView({ tasks, lists, onExport, onImport, onToggle, onEdi
     event.target.value = '';
   }
 
-  const visibleTasks = sortTasks(tasks.filter((task) => task.status !== 'archived'));
+  const visibleTasks = sortTasks(getTasksVisibleOutsideOwnList(tasks, lists).filter((task) => task.status !== 'archived'));
 
   async function handleDiagnostics() {
     setDiagnosticsRunning(true);
