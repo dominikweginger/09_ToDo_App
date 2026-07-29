@@ -1,6 +1,6 @@
 # TECHNICAL_SPEC.md
 
-Status: **aktuelle kanonische technische Spezifikation nach CR_005** (29.07.2026). Historische Execution Specs dokumentieren die jeweilige Umsetzung, sind aber nicht mehr auszufuehren.
+Status: **aktuelle kanonische technische Spezifikation nach CR_006** (29.07.2026). Historische Execution Specs dokumentieren die jeweilige Umsetzung, sind aber nicht mehr auszufuehren.
 
 ## Zielarchitektur
 
@@ -112,6 +112,9 @@ Import:
 ## Datumsauswahl im Aufgabenformular
 
 - `TaskForm` verwendet fuer Schnellaktionen und den nativen Picker-Ausloeser ausschliesslich `draft.dueDate`.
+- Der aktive Datumstyp wird ohne eigenen React-State in der Reihenfolge leer, heute, morgen, naechster Montag, benutzerdefiniert aus `draft.dueDate` abgeleitet.
+- Jeder Datumsbutton besitzt `aria-pressed`; genau ein Button ist aktiv und zeigt zusaetzlich ein fuer assistive Technologien verborgenes Check-Icon.
+- Bei einem benutzerdefinierten Datum zeigt der bestehende Picker-Button `formatDateLabel(draft.dueDate)` und bleibt zum erneuten Oeffnen des Pickers bedienbar.
 - Der stets vorhandene native Picker-Ausloeser ist visuell verborgen und nicht per Tab erreichbar. `showPicker()` wird bevorzugt; `focus()` und `click()` bilden den fehlergeschuetzten Fallback.
 - Unter `Details anzeigen` existiert kein zweites sichtbares Datumsfeld; Uhrzeit und alle anderen Detailfunktionen bleiben erhalten.
 - Die formularbezogene Schnellaktion `Diese Woche` existiert nicht mehr. Smart-View- und Wochenlogik in Domain und Views bleiben unveraendert.

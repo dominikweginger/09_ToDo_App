@@ -29,6 +29,7 @@ Ergaenzend sind [`DATA_MODEL.md`](DATA_MODEL.md), [`UI_SPEC.md`](UI_SPEC.md) und
 | CR_003 | **Umgesetzt** | Arbeitsbaum nach Base `e6549b7`; Abschluss/Verifikation 18.07.2026 | `TodoList.isChecklist`, geschuetzte Default-Liste, zentrale Sichtbarkeit undatierter Checklistenaufgaben, unveraenderte eigene Listen/Zaehler, Backup-v2-Kompatibilitaet. Keine Task-, DB- oder Backup-Schemamigration. | [`CR_003_CHANGE_REQUEST.md`](../Change_request/CR_003_Listenupdate_checkliste/CR_003_CHANGE_REQUEST.md) |
 | CR_004 | **Umgesetzt** | Base `6084cba`; Abschluss/Verifikation 29.07.2026 | Sichtbarer barrierearmer Rueckweg aus Listendetails, erneutes Tippen auf `Listen`, Browser-/Android-Zurueck und konsistente History-Bereinigung ohne Router-, Datenmodell-, DB- oder Backup-Aenderung. | [`CR_004_CHANGE_REQUEST.md`](../Change_request/CR_004_Listendetail_Ruecknavigation/CR_004_CHANGE_REQUEST.md) |
 | CR_005 | **Umgesetzt** | Base `44886bb`; Abschluss/Verifikation 29.07.2026 | Formularbezogene Schnellaktion `Diese Woche` entfernt; jederzeit sichtbares `Datum waehlen` oeffnet den nativen Picker mit sicherem Fallback und gemeinsamem `draft.dueDate`. Smart View und Wochenfunktionen bleiben unveraendert. | [`CR_005_CHANGE_REQUEST.md`](<../Change_request/CR_005 – Datums-Schnellaktionen bereinigen und „Datum wählen“ ergänzen/CR_005_CHANGE_REQUEST.md>) |
+| CR_006 | **Umgesetzt** | Base `f29ce00`; Abschluss/Verifikation 29.07.2026 | Gewaehltes Schnelldatum aus `draft.dueDate` eindeutig durch `aria-pressed`, aktive Gestaltung und Haken sichtbar; freie Daten dynamisch im Picker-Button. Bestaetigte Ausnahme: kein redundantes Detail-Datumsfeld. | [`CR_006_CHANGE_REQUEST.md`](../Change_request/CR_006_CHANGE_REQUEST/CR_006_CHANGE_REQUEST.md) |
 
 ## CR_003 – verifizierter Ist-Stand
 
@@ -61,11 +62,22 @@ Bekannte historische Abweichung: Die CR_003-Unterlagen sprechen teilweise von �
 - Automatische Verifikation am 29.07.2026: 16 Testdateien / 81 Tests bestanden; `npm run build` einschliesslich PWA-Generierung erfolgreich.
 - Browser-Smoke am 29.07.2026 bei `1013 x 912`: kein sichtbarer Datumsblock unter `Details anzeigen`, Uhrzeit und weitere Detailfelder erhalten, nativer Picker weiterhin ausloesbar sowie 0 Konsolenfehler und 0 Warnungen. Kein physischer Android-Test.
 
+## CR_006 – verifizierter Ist-Stand
+
+- Der aktive Datumstyp wird ohne zusaetzlichen React-State in der Reihenfolge leer, heute, morgen, naechster Montag, benutzerdefiniert ausschliesslich aus `draft.dueDate` abgeleitet.
+- Genau einer der fuenf Datumsbuttons besitzt `aria-pressed="true"`, aktive Kontrastgestaltung und ein sichtbares, fuer assistive Technologien verborgenes Check-Icon.
+- Ein freies Datum wird mit `formatDateLabel()` im bestehenden Picker-Button angezeigt; entspricht die freie Auswahl einem Preset, wird stattdessen dieses Preset aktiv.
+- Das unter CR_005 bewusst entfernte redundante Detail-Datumsfeld bleibt gemaess bestaetigter Ausnahme entfernt. Der native Picker bleibt die einzige freie Datumseingabe und schreibt direkt `draft.dueDate`.
+- Datenmodell, Persistenz, Services, Smart Views, Wochenfunktionen, `MoveDateChips`, Picker-Logik und Abhaengigkeiten bleiben unveraendert.
+- Automatische Verifikation am 29.07.2026: 16 Testdateien / 85 Tests bestanden; `npm run build` einschliesslich PWA-Generierung erfolgreich.
+- Browser-Smokes bei `390 x 844` und `320 x 700`: aktive Zustaende und Haken, freie Datumsanzeige, erneutes Picker-Oeffnen, Preset-Rueckzuordnung, sichtbarer Tastaturfokus und Flex-Wrapping ohne horizontales Ueberlaufen erfolgreich; 0 Konsolenfehler und 0 Warnungen. Ein zusaetzlicher Browser-End-to-End-Speicherlauf wurde wegen eines Werkzeug-Timeouts nicht als bestanden gewertet; Speichern ist automatisiert abgedeckt. Kein physischer Android-Test.
+
 ## Historische Unterlagen
 
 - CR-Dokumente beschreiben die zum jeweiligen Zeitpunkt angeforderte Aenderung und werden nicht rueckwirkend in aktuelle Spezifikationen umgeschrieben.
 - `CR_003_EXECUTION_SPEC.md`, `CR_003_TEST_REFERENCE.md` und `CR_003_GOAL_PROMPT.md` sind abgeschlossene historische Ausfuehrungsunterlagen.
 - `CR_004_CHANGE_REQUEST.md` bleibt die historische Anforderungsquelle und wird durch den dokumentierten Ist-Stand nicht rueckwirkend umgeschrieben.
 - `CR_005_CHANGE_REQUEST.md` bleibt die historische Anforderungsquelle und wird durch den dokumentierten Ist-Stand nicht rueckwirkend umgeschrieben.
+- `CR_006_CHANGE_REQUEST.md` bleibt die historische Anforderungsquelle; die bestaetigte Ausnahme fuer das bereits entfernte Detail-Datumsfeld ist im kanonischen Ist-Stand dokumentiert.
 - `CR_001/brain_dump.md`, `docs/PRODUCT_RESEARCH.md` und `docs/PROMPTS.md` sind Ideen-, Research- beziehungsweise Prompt-Unterlagen. Sie sind nicht normativ.
 - `CONSISTENCY_CHECK.md` ist der aktuelle Dokumentationsabgleich; seine fruehere Vorimplementierungsbewertung wurde ersetzt.

@@ -4,7 +4,7 @@ SoloTodo ist eine mobile-first To-Do-PWA fuer eine einzelne Person. Aufgaben und
 
 ## Aktueller Stand
 
-Status: **SoloTodo V2, CR_001 bis CR_005 umgesetzt** (Dokumentationsstand 29.07.2026).
+Status: **SoloTodo V2, CR_001 bis CR_006 umgesetzt** (Dokumentationsstand 29.07.2026).
 
 - Hauptnavigation: `Dashboard | Geplant | Listen | Mehr`
 - sieben Smart Views: Heute, Geplant, Diese Woche, Naechste Woche, Markiert, Dringend und Ohne Datum
@@ -12,7 +12,7 @@ Status: **SoloTodo V2, CR_001 bis CR_005 umgesetzt** (Dokumentationsstand 29.07.
 - verlaessliche Ruecknavigation aus Listendetails ueber sichtbaren Button, erneutes Tippen auf `Listen` und Browser-/Android-Zurueck
 - optionale Checklisten: undatierte Aufgaben sind nur in der eigenen Checkliste und deren Zaehlern sichtbar; sobald sie ein Datum haben, gelten die normalen globalen Regeln
 - Aufgaben mit Liste, Datum, Uhrzeit, Prioritaet, Markierung, Notiz, Status, manueller Sortierung und einfacher Wiederholung
-- kompaktes Aufgabenformular mit Schnelldaten und direkter nativer Datumsauswahl
+- kompaktes Aufgabenformular mit Schnelldaten, eindeutig sichtbarer aktiver Datumsauswahl und direktem nativen Date Picker
 - Geplant-Ansicht mit gruppierter Liste, Wochenuebersicht und Kalender
 - JSON-Backup/Import mit Schema v2 fuer nicht archivierte Tasks und alle Listen
 - PWA-App-Shell und sichtbarer Update-Hinweis

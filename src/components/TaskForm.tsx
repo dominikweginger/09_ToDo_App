@@ -1,6 +1,6 @@
-import { X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { FormEvent, useMemo, useRef, useState } from 'react';
-import { todayKey } from '../domain/date-utils';
+import { formatDateLabel, todayKey } from '../domain/date-utils';
 import { DEFAULT_LIST_ID, TodoList } from '../domain/list-model';
 import { priorityLabel, Task, TaskDraft } from '../domain/task-model';
 import { validateTaskDraft } from '../domain/task-validation';
@@ -34,6 +34,20 @@ const priorityOptions = Object.entries(priorityLabel).map(([key, label]) => ({
   key: key as TaskDraft['priority'],
   label
 }));
+
+type ActiveQuickDate = 'today' | 'tomorrow' | 'next-week' | 'custom' | 'none';
+
+function getActiveQuickDate(dueDate: string): ActiveQuickDate {
+  const today = todayKey();
+  const tomorrow = addDays(today, 1);
+  const nextWeek = addDays(startOfWeek(today), 7);
+
+  if (!dueDate) return 'none';
+  if (dueDate === today) return 'today';
+  if (dueDate === tomorrow) return 'tomorrow';
+  if (dueDate === nextWeek) return 'next-week';
+  return 'custom';
+}
 
 function hasOpenDetails(task: Task | null) {
   if (!task) return false;
@@ -122,6 +136,8 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
   }
 
   const recurrenceEnabled = Boolean(draft.recurrence?.enabled);
+  const activeQuickDate = getActiveQuickDate(draft.dueDate);
+  const isCustomDate = activeQuickDate === 'custom';
 
   return (
     <div className="sheet-backdrop" role="presentation">
@@ -146,11 +162,31 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
           <input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} autoFocus />
         </label>
         <div className="quick-actions" aria-label="Schnelldatum">
-          <button type="button" onClick={() => setQuickDate('today')}>Heute</button>
-          <button type="button" onClick={() => setQuickDate('tomorrow')}>Morgen</button>
-          <button type="button" onClick={() => setQuickDate('next-week')}>Naechste Woche</button>
-          <button type="button" onClick={openDatePicker}>Datum wählen</button>
-          <button type="button" onClick={() => setQuickDate('none')}>Ohne Datum</button>
+          <button type="button" aria-pressed={activeQuickDate === 'today'} onClick={() => setQuickDate('today')}>
+            {activeQuickDate === 'today' && <Check size={16} aria-hidden="true" />}
+            Heute
+          </button>
+          <button type="button" aria-pressed={activeQuickDate === 'tomorrow'} onClick={() => setQuickDate('tomorrow')}>
+            {activeQuickDate === 'tomorrow' && <Check size={16} aria-hidden="true" />}
+            Morgen
+          </button>
+          <button type="button" aria-pressed={activeQuickDate === 'next-week'} onClick={() => setQuickDate('next-week')}>
+            {activeQuickDate === 'next-week' && <Check size={16} aria-hidden="true" />}
+            Naechste Woche
+          </button>
+          <button
+            type="button"
+            aria-pressed={isCustomDate}
+            onClick={openDatePicker}
+            aria-label={isCustomDate ? `Ausgewähltes Datum ${formatDateLabel(draft.dueDate)}. Datum ändern` : 'Datum wählen'}
+          >
+            {isCustomDate && <Check size={16} aria-hidden="true" />}
+            {isCustomDate ? formatDateLabel(draft.dueDate) : 'Datum wählen'}
+          </button>
+          <button type="button" aria-pressed={activeQuickDate === 'none'} onClick={() => setQuickDate('none')}>
+            {activeQuickDate === 'none' && <Check size={16} aria-hidden="true" />}
+            Ohne Datum
+          </button>
           <input
             ref={dateInputRef}
             className="native-date-picker"

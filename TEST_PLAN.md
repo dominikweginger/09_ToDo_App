@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Der Testplan prueft den aktuellen Stand von SoloTodo V2 nach CR_005 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Checklisten-Sichtbarkeit, verlaessliche Ruecknavigation aus Listendetails, Datums-Schnellaktionen, Smart Views, Backup v2 und mobile Bedienbarkeit.
+Der Testplan prueft den aktuellen Stand von SoloTodo V2 nach CR_006 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Checklisten-Sichtbarkeit, verlaessliche Ruecknavigation aus Listendetails, Datums-Schnellaktionen, Smart Views, Backup v2 und mobile Bedienbarkeit.
 
 Status: **aktuelle kanonische Test- und Smoke-Referenz** (29.07.2026).
 
@@ -15,7 +15,7 @@ npm test
 npm run build
 ```
 
-Zuletzt am 29.07.2026 ausgefuehrt: 16 Testdateien / 81 Tests bestanden; Produktionsbuild einschliesslich PWA-Service-Worker erfolgreich. Die CR_005-Tests pruefen Sichtbarkeit und Reihenfolge der Schnelldaten, `showPicker()` und beide Fallback-Faelle, alleinigen Datumszustand, Speichern, kontrollierte Datumswerte und bestehende Aufgaben. Ein Browser-Smoke bei `1013 x 912` bestaetigte den entfernten Detail-Datumsblock, die erhaltenen Detailfelder, den weiterhin ausloesbaren nativen Picker und 0 Konsolenfehler beziehungsweise Warnungen. Ein physisches Android-Geraet wurde nicht geprueft.
+Zuletzt am 29.07.2026 ausgefuehrt: 16 Testdateien / 85 Tests bestanden; Produktionsbuild einschliesslich PWA-Service-Worker erfolgreich. Die CR_006-Tests pruefen mit kontrolliertem Systemdatum genau einen aktiven Button, alle Presets, Leeren, freie Daten, Picker-Rueckzuordnung, `defaultDate`, bestehende Aufgaben, Speichern, `aria-pressed` und verborgene Check-Icons. Browser-Smokes bei `390 x 844` und `320 x 700` bestaetigten aktive Darstellung, Haken, benutzerdefinierte Datumsanzeige, erneutes Picker-Oeffnen, Preset-Rueckzuordnung, sichtbaren Tastaturfokus, Flex-Wrapping ohne horizontales Ueberlaufen sowie 0 Konsolenfehler und 0 Warnungen. Ein physisches Android-Geraet wurde nicht geprueft.
 
 Abgedeckt:
 - Task-Erstellung mit Default-Liste
@@ -47,6 +47,8 @@ Abgedeckt:
 - nativer Date Picker ueber `showPicker()` sowie sicherer `focus()`-/`click()`-Fallback
 - alleiniges `draft.dueDate` fuer Picker, Schnelldaten, Speichern und bestehende Aufgaben
 - unveraenderte Schnelldaten mit kontrolliertem Systemdatum
+- genau ein aktiver Datumsbutton mit `aria-pressed="true"` und sichtbarem, assistiv verborgenem Check-Icon
+- dynamische, mit `formatDateLabel()` erzeugte Anzeige benutzerdefinierter Daten und Rueckzuordnung frei gewaehlter Preset-Daten
 - Backup-v2-Roundtrip, alte/ungueltige `isChecklist`-Werte und vollstaendiger Task-Export
 
 ## Smoke Tests
@@ -63,7 +65,10 @@ Abgedeckt:
 ## Aufgabenformular und Schnelldatum
 
 - Bei geschlossenen Details sind `Heute`, `Morgen`, `Naechste Woche`, `Datum waehlen` und `Ohne Datum` in dieser Reihenfolge sichtbar; `Diese Woche` ist nur als formularbezogene Schnellaktion entfernt.
-- `Datum waehlen` oeffnen, ein Datum auswaehlen, Details ein- und ausblenden und speichern; der gewaehlte Wert bleibt erhalten.
+- Zu jedem Zeitpunkt ist genau ein Datumsbutton durch Hintergrund, Rahmen, Textfarbe, Haken und `aria-pressed="true"` aktiv.
+- `Datum waehlen` oeffnen und ein freies Datum auswaehlen; der Button zeigt danach das formatierte Datum und bleibt zum Aendern bedienbar.
+- Ueber den freien Picker morgen auswaehlen; `Morgen` wird aktiv und der Picker-Button zeigt wieder `Datum waehlen`.
+- Details ein- und ausblenden und speichern; der ueber den alleinigen nativen Picker gewaehlte Wert bleibt erhalten.
 - Unter `Details anzeigen` wird kein zusaetzlicher Datumsblock angezeigt; Uhrzeit und die anderen Detailfelder bleiben vorhanden.
 - Picker bei bestehendem Datum abbrechen; Datum, Titel, Liste, Notiz und weitere Formularwerte bleiben unveraendert.
 - Die globale Smart View `Diese Woche` und Planung/Wochenansichten bleiben unveraendert.

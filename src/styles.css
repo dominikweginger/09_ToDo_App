@@ -798,13 +798,26 @@ button {
 }
 
 .quick-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
   min-height: 36px;
   border: 1px solid #dbe3ee;
   border-radius: 8px;
   background: #fff;
   color: #334155;
   padding: 0 10px;
+  gap: 6px;
   font-weight: 800;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.quick-actions button[aria-pressed='true'] {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  color: #fff;
 }
 
 .native-date-picker {

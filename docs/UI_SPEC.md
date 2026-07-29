@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Diese Spezifikation beschreibt die aktuell implementierte mobile Benutzeroberflaeche von SoloTodo V2 nach CR_005.
+Diese Spezifikation beschreibt die aktuell implementierte mobile Benutzeroberflaeche von SoloTodo V2 nach CR_006.
 
 Status: **kanonische UI-Spezifikation** (29.07.2026).
 
@@ -136,4 +136,6 @@ Quick Actions in der stets sichtbaren Gruppe `Schnelldatum`:
 - Datum waehlen
 - Ohne Datum
 
-`Datum waehlen` oeffnet den nativen Date Picker auch bei geschlossenem Detailbereich. Unter `Details anzeigen` gibt es keinen zusaetzlichen Datumsblock. Die globale Smart View `Diese Woche` bleibt unveraendert.
+Genau eine Datumsoption ist jederzeit aktiv. Der aktive Button besitzt einen kontrastreichen Hintergrund, einen sichtbaren Haken und `aria-pressed="true"`. Bei einem freien Datum zeigt der bestehende Picker-Button statt `Datum waehlen` das mit `formatDateLabel()` formatierte Datum; ein erneuter Klick oeffnet den nativen Picker. Entspricht die freie Auswahl einem Preset, wird dieses Preset aktiv und der Picker-Button zeigt wieder `Datum waehlen`.
+
+Unter `Details anzeigen` gibt es gemaess bestaetigter Ausnahme keinen redundanten Datumsblock. Der native Picker und alle Presets verwenden ausschliesslich `draft.dueDate`. Die globale Smart View `Diese Woche` bleibt unveraendert.

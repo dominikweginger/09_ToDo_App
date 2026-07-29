@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Dieses Dokument beschreibt den abgeschlossenen Umsetzungsstand von SoloTodo V2 bis CR_005. Es ist kein Zukunftsplan. Neue Vorhaben benoetigen einen eigenen Change Request und duerfen die geltenden Entscheidungen nicht stillschweigend aendern.
+Dieses Dokument beschreibt den abgeschlossenen Umsetzungsstand von SoloTodo V2 bis CR_006. Es ist kein Zukunftsplan. Neue Vorhaben benoetigen einen eigenen Change Request und duerfen die geltenden Entscheidungen nicht stillschweigend aendern.
 
 ## Abgeschlossen mit CR_001
 
@@ -40,6 +40,7 @@ Dieses Dokument beschreibt den abgeschlossenen Umsetzungsstand von SoloTodo V2 b
 - `CR_003`: **Umgesetzt** am 18.07.2026; Checklistenmetadatum, zentrale Sichtbarkeit und kompatibles Backupverhalten.
 - `CR_004`: **Umgesetzt** am 29.07.2026; drei konsistente Rueckwege aus Listendetails mit leichtem History-State und ohne Router- oder Datenmigration.
 - `CR_005`: **Umgesetzt** am 29.07.2026; formularbezogene Schnellaktion `Diese Woche` entfernt und direkte native Datumsauswahl mit gemeinsamem `draft.dueDate` sowie sicherem Fallback ergaenzt.
+- `CR_006`: **Umgesetzt** am 29.07.2026; aktives Schnelldatum ausschliesslich aus `draft.dueDate` abgeleitet und durch `aria-pressed`, sichtbaren Haken sowie dynamische Anzeige benutzerdefinierter Daten eindeutig gemacht. Das bewusst entfernte redundante Detail-Datumsfeld bleibt aufgrund der bestaetigten Ausnahme entfernt.
 
 Siehe `docs/CHANGELOG.md` fuer die kanonische Historie und Verweise.
 
@@ -63,7 +64,7 @@ Siehe `docs/CHANGELOG.md` fuer die kanonische Historie und Verweise.
 - `npm run build`
 - Browser-Smoke-Test auf `http://127.0.0.1:5173`
 
-Letzte dokumentierte automatische Pruefung am 29.07.2026: `npm test` mit 16 Testdateien und 81 bestandenen Tests; `npm run build` einschliesslich PWA-Service-Worker erfolgreich. Ein Browser-Smoke bei `1013 x 912` bestaetigte fuer CR_005 den entfernten Detail-Datumsblock, die erhaltenen Detailfelder und den weiterhin ausloesbaren nativen Picker ohne Konsolenfehler. Ein physischer Android-Test wurde nicht ausgefuehrt.
+Letzte dokumentierte automatische Pruefung am 29.07.2026: `npm test` mit 16 Testdateien und 85 bestandenen Tests; `npm run build` einschliesslich PWA-Service-Worker erfolgreich. Browser-Smokes bei `390 x 844` und `320 x 700` bestaetigten fuer CR_006 eindeutige aktive Zustaende, benutzerdefinierte Datumsanzeige, Picker-Rueckzuordnung zu Presets, Tastaturfokus, Flex-Wrapping ohne horizontales Ueberlaufen sowie 0 Konsolenfehler und 0 Warnungen. Ein physischer Android-Test wurde nicht ausgefuehrt.
 
 ## Verbleibende technische Detailentscheidungen
 

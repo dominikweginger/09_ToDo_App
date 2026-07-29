@@ -1,6 +1,6 @@
 # docs/DECISIONS.md
 
-Status: **kanonisches Entscheidungsprotokoll** (29.07.2026). Die Entscheidungen 1 bis 21 gelten, soweit sie nicht in diesem Dokument ausdruecklich als ersetzt oder offen markiert sind.
+Status: **kanonisches Entscheidungsprotokoll** (29.07.2026). Die Entscheidungen 1 bis 23 gelten, soweit sie nicht in diesem Dokument ausdruecklich als ersetzt oder offen markiert sind.
 
 ## Getroffene Entscheidungen
 
@@ -155,7 +155,7 @@ Begruendung:
 
 Entscheidung:
 - Neue Aufgaben starten im kompakten Modus mit Titel, Schnelldatum, Liste und Aktionen.
-- Notiz, Datumseingabe, Uhrzeit, Prioritaet, Status, Markierung und Wiederholung liegen im optionalen Details-Bereich.
+- Notiz, Uhrzeit, Prioritaet, Status, Markierung und Wiederholung liegen im optionalen Details-Bereich.
 - Beim Bearbeiten wird der Details-Bereich automatisch geoeffnet, wenn optionale Daten vorhanden oder abweichend sind.
 
 Begruendung:
@@ -248,6 +248,20 @@ Begruendung:
 - es entsteht keine zweite Datumsquelle oder Synchronisierungslogik
 - native Browserfunktionalitaet vermeidet Abhaengigkeit, eigenen Kalenderdialog und Aenderungen an Datenmodell oder Persistenz
 
+### 23. Sichtbarer aktiver Datumszustand ohne redundantes Detailfeld
+
+Entscheidung:
+- Der aktive Schnelldatumstyp wird ausschliesslich aus `draft.dueDate` abgeleitet; es gibt keinen eigenen Auswahl-State.
+- Genau ein Datumsbutton ist mit `aria-pressed="true"`, aktiver Kontrastgestaltung und sichtbarem Check-Icon markiert.
+- Der bestehende Picker-Button zeigt bei freien Daten `formatDateLabel(draft.dueDate)` und bleibt zum Aendern bedienbar.
+- Das bereits entfernte sichtbare Datumsfeld unter `Details anzeigen` wird nicht wieder eingefuehrt. Diese Abweichung von der urspruenglichen CR_006-Testbeschreibung ist ausdruecklich bestaetigt.
+
+Begruendung:
+- Auswahl und konkretes Datum sind direkt im kompakten Formular sichtbar
+- Haken und `aria-pressed` machen den Zustand auch ohne Farbwahrnehmung eindeutig
+- ein zweites sichtbares Feld wuerde denselben Wert redundant darstellen
+- der verborgene native Picker und alle Presets verwenden weiterhin allein `draft.dueDate`
+
 ## Offene Entscheidungen
 
 1. Hosting-Ziel der PWA
@@ -257,7 +271,7 @@ Begruendung:
 
 ## Bewusst verworfene oder verschobene Ideen
 
-Nicht im aktuellen Stand bis einschliesslich CR_005:
+Nicht im aktuellen Stand bis einschliesslich CR_006:
 - native Android-App
 - iOS-App
 - Cloud-Sync
