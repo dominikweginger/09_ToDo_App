@@ -1,6 +1,6 @@
 # TECHNICAL_SPEC.md
 
-Status: **aktuelle kanonische technische Spezifikation nach CR_004** (29.07.2026). Historische Execution Specs dokumentieren die jeweilige Umsetzung, sind aber nicht mehr auszufuehren.
+Status: **aktuelle kanonische technische Spezifikation nach CR_005** (29.07.2026). Historische Execution Specs dokumentieren die jeweilige Umsetzung, sind aber nicht mehr auszufuehren.
 
 ## Zielarchitektur
 
@@ -108,6 +108,14 @@ Import:
 - `SettingsView`: filtert innerhalb seiner Props nur die Darstellung `Alle Aufgaben`; Backup-Anzahl und Exportcallback verwenden alle uebergebenen Tasks. `App.tsx` uebergibt dabei bereits den nicht archivierten Bestand.
 - `ListDetailView` und `ListsView`: verwenden bewusst keinen globalen Filter.
 - `PlannedView` und `CalendarView`: benoetigen keine Sonderlogik, weil ihre relevanten Tasks datiert sind.
+
+## Datumsauswahl im Aufgabenformular
+
+- `TaskForm` verwendet fuer Schnellaktionen und den nativen Picker-Ausloeser ausschliesslich `draft.dueDate`.
+- Der stets vorhandene native Picker-Ausloeser ist visuell verborgen und nicht per Tab erreichbar. `showPicker()` wird bevorzugt; `focus()` und `click()` bilden den fehlergeschuetzten Fallback.
+- Unter `Details anzeigen` existiert kein zweites sichtbares Datumsfeld; Uhrzeit und alle anderen Detailfunktionen bleiben erhalten.
+- Die formularbezogene Schnellaktion `Diese Woche` existiert nicht mehr. Smart-View- und Wochenlogik in Domain und Views bleiben unveraendert.
+- Es gibt keinen zweiten Datums-State, keine neue Abhaengigkeit und keine Aenderung an Modell, Persistenz oder Services.
 
 ## Ruecknavigation aus Listendetails
 

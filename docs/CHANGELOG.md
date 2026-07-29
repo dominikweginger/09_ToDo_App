@@ -28,6 +28,7 @@ Ergaenzend sind [`DATA_MODEL.md`](DATA_MODEL.md), [`UI_SPEC.md`](UI_SPEC.md) und
 | CR_002 | **Teilweise umgesetzt** | Commit `e6549b7`, 14.06.2026 | Umgesetzt sind kompakte Schnellerfassung, entschlackte Task-Karte mit Aktions-Sheet, Schnellverschieben, Smart View `Ohne Datum`, getrennte Heute-Darstellung und App-Sheet fuer Listen. Nicht umgesetzt ist insbesondere die vorgeschlagene Undo-Logik; weitere der 20 Ideen bleiben Vorschlaege. | [`CR_002_APP_IMPROVEMENT_PROPOSAL.md`](CR_002_APP_IMPROVEMENT_PROPOSAL.md) |
 | CR_003 | **Umgesetzt** | Arbeitsbaum nach Base `e6549b7`; Abschluss/Verifikation 18.07.2026 | `TodoList.isChecklist`, geschuetzte Default-Liste, zentrale Sichtbarkeit undatierter Checklistenaufgaben, unveraenderte eigene Listen/Zaehler, Backup-v2-Kompatibilitaet. Keine Task-, DB- oder Backup-Schemamigration. | [`CR_003_CHANGE_REQUEST.md`](../Change_request/CR_003_Listenupdate_checkliste/CR_003_CHANGE_REQUEST.md) |
 | CR_004 | **Umgesetzt** | Base `6084cba`; Abschluss/Verifikation 29.07.2026 | Sichtbarer barrierearmer Rueckweg aus Listendetails, erneutes Tippen auf `Listen`, Browser-/Android-Zurueck und konsistente History-Bereinigung ohne Router-, Datenmodell-, DB- oder Backup-Aenderung. | [`CR_004_CHANGE_REQUEST.md`](../Change_request/CR_004_Listendetail_Ruecknavigation/CR_004_CHANGE_REQUEST.md) |
+| CR_005 | **Umgesetzt** | Base `44886bb`; Abschluss/Verifikation 29.07.2026 | Formularbezogene Schnellaktion `Diese Woche` entfernt; jederzeit sichtbares `Datum waehlen` oeffnet den nativen Picker mit sicherem Fallback und gemeinsamem `draft.dueDate`. Smart View und Wochenfunktionen bleiben unveraendert. | [`CR_005_CHANGE_REQUEST.md`](<../Change_request/CR_005 – Datums-Schnellaktionen bereinigen und „Datum wählen“ ergänzen/CR_005_CHANGE_REQUEST.md>) |
 
 ## CR_003 – verifizierter Ist-Stand
 
@@ -51,10 +52,20 @@ Bekannte historische Abweichung: Die CR_003-Unterlagen sprechen teilweise von �
 - Automatische Verifikation am 29.07.2026: 16 Testdateien / 74 Tests bestanden; `npm run build` einschliesslich PWA-Generierung erfolgreich.
 - Chromium-Smoke am 29.07.2026 bei `390 x 844` gegen `npm run preview`: drei Rueckwege, mehrere Listen, korrekte Listenzuordnung, Filter, Bearbeiten/Abbrechen, Statuswechsel, History-Bereinigung, Offline-Neuladen sowie 0 Konsolenfehler und 0 Warnungen erfolgreich. Kein physischer Android-Test.
 
+## CR_005 – verifizierter Ist-Stand
+
+- Das Aufgabenformular zeigt `Heute`, `Morgen`, `Naechste Woche`, `Datum waehlen` und `Ohne Datum` in dieser Reihenfolge; die fruehere Schnellaktion `Diese Woche` samt `'this-week'`-Zweig ist entfernt.
+- Der native Picker wird bevorzugt ueber `showPicker()` geoeffnet und faellt bei fehlender oder fehlerhafter Unterstuetzung sicher auf `focus()` und `click()` zurueck.
+- Schnellaktionen und Picker-Ausloeser verwenden ausschliesslich `draft.dueDate`; das fruehere sichtbare Datumsfeld unter `Details anzeigen` ist entfernt.
+- Smart View `Diese Woche`, Wochenplanung, Datenmodell, Services, Dexie-Schema, Backup-Schema und Abhaengigkeiten bleiben unveraendert.
+- Automatische Verifikation am 29.07.2026: 16 Testdateien / 81 Tests bestanden; `npm run build` einschliesslich PWA-Generierung erfolgreich.
+- Browser-Smoke am 29.07.2026 bei `1013 x 912`: kein sichtbarer Datumsblock unter `Details anzeigen`, Uhrzeit und weitere Detailfelder erhalten, nativer Picker weiterhin ausloesbar sowie 0 Konsolenfehler und 0 Warnungen. Kein physischer Android-Test.
+
 ## Historische Unterlagen
 
 - CR-Dokumente beschreiben die zum jeweiligen Zeitpunkt angeforderte Aenderung und werden nicht rueckwirkend in aktuelle Spezifikationen umgeschrieben.
 - `CR_003_EXECUTION_SPEC.md`, `CR_003_TEST_REFERENCE.md` und `CR_003_GOAL_PROMPT.md` sind abgeschlossene historische Ausfuehrungsunterlagen.
 - `CR_004_CHANGE_REQUEST.md` bleibt die historische Anforderungsquelle und wird durch den dokumentierten Ist-Stand nicht rueckwirkend umgeschrieben.
+- `CR_005_CHANGE_REQUEST.md` bleibt die historische Anforderungsquelle und wird durch den dokumentierten Ist-Stand nicht rueckwirkend umgeschrieben.
 - `CR_001/brain_dump.md`, `docs/PRODUCT_RESEARCH.md` und `docs/PROMPTS.md` sind Ideen-, Research- beziehungsweise Prompt-Unterlagen. Sie sind nicht normativ.
 - `CONSISTENCY_CHECK.md` ist der aktuelle Dokumentationsabgleich; seine fruehere Vorimplementierungsbewertung wurde ersetzt.

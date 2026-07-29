@@ -6,13 +6,13 @@ SoloTodo PWA
 
 ## Dokumentstatus und Kanonizitaet
 
-Status: **aktuelle kanonische Produktspezifikation nach CR_004** (29.07.2026).
+Status: **aktuelle kanonische Produktspezifikation nach CR_005** (29.07.2026).
 
 Bei Produktfragen ist dieses Dokument nach `AGENTS.md` massgeblich. Historische Anforderungen in `master_blueprint.md`, `CR_001/` und `Change_request/` erklaeren die Entstehung, ersetzen aber nicht diesen Ist-Stand.
 
 ## Produktbeschreibung
 
-SoloTodo PWA ist eine private, lokal speichernde und offlinefaehige Aufgaben-Zentrale fuer eine einzelne Person. SoloTodo V2 strukturiert die App um Dashboard, zeitliche Planung, echte Listen und berechnete Smart Views; CR_003 ergaenzt Checklisten als Listeneigenschaft und CR_004 eine verlaessliche Ruecknavigation aus Listendetails.
+SoloTodo PWA ist eine private, lokal speichernde und offlinefaehige Aufgaben-Zentrale fuer eine einzelne Person. SoloTodo V2 strukturiert die App um Dashboard, zeitliche Planung, echte Listen und berechnete Smart Views; CR_003 ergaenzt Checklisten als Listeneigenschaft, CR_004 eine verlaessliche Ruecknavigation aus Listendetails und CR_005 eine direkte native Datumsauswahl im kompakten Aufgabenformular.
 
 ## Projektursprung
 
@@ -95,6 +95,7 @@ SoloTodo soll als neutrale, moderne "Apple Reminders light"-PWA funktionieren, o
 - Beim Loeschen einer nicht leeren Liste wird die Anzahl betroffener Aufgaben bestaetigt.
 - Smart Views zeigen nur offene, nicht archivierte Aufgaben.
 - `Ohne Datum` ist eine Smart View, keine Hauptnavigation.
+- Das kompakte Aufgabenformular bietet `Heute`, `Morgen`, `Naechste Woche`, `Datum waehlen` und `Ohne Datum`; die Smart View `Diese Woche` bleibt davon unabhaengig erhalten.
 - Dashboard-Smart-View-Zaehler verwenden dieselbe zentrale Checklisten-Sichtbarkeit wie die zugehoerigen Detailansichten.
 - `Alle Aufgaben` blendet undatierte Checklistenaufgaben aus; Backup-Anzahl und Exportumfang bleiben gegenueber dem bisherigen nicht archivierten App-Bestand vollstaendig.
 - Wiederkehrende Aufgaben bleiben beim Abhaken offen und erhalten das naechste Faelligkeitsdatum.

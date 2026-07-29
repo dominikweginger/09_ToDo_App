@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useMemo, useRef, useState } from 'react';
 import { todayKey } from '../domain/date-utils';
 import { DEFAULT_LIST_ID, TodoList } from '../domain/list-model';
 import { priorityLabel, Task, TaskDraft } from '../domain/task-model';
@@ -75,6 +75,7 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
   const [draft, setDraft] = useState<TaskDraft>(initialDraft);
   const [errors, setErrors] = useState<string[]>([]);
   const [detailsOpen, setDetailsOpen] = useState(() => hasOpenDetails(task));
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -84,11 +85,40 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
     await onSave(draft);
   }
 
-  function setQuickDate(value: 'today' | 'tomorrow' | 'this-week' | 'next-week' | 'none') {
+  function setQuickDate(value: 'today' | 'tomorrow' | 'next-week' | 'none') {
     const today = todayKey();
-    const nextWeek = addDays(startOfWeek(today), 7);
-    const dueDate = value === 'today' ? today : value === 'tomorrow' ? addDays(today, 1) : value === 'this-week' ? today : value === 'next-week' ? nextWeek : '';
-    setDraft({ ...draft, dueDate });
+    const dueDateByAction = {
+      today,
+      tomorrow: addDays(today, 1),
+      'next-week': addDays(startOfWeek(today), 7),
+      none: ''
+    } as const;
+
+    setDraft((current) => ({
+      ...current,
+      dueDate: dueDateByAction[value]
+    }));
+  }
+
+  function openDatePicker(): void {
+    const dateInput = dateInputRef.current;
+    if (!dateInput) return;
+
+    try {
+      if (typeof dateInput.showPicker === 'function') {
+        dateInput.showPicker();
+        return;
+      }
+    } catch {
+      // Fall through to the broadly supported focus/click behavior.
+    }
+
+    try {
+      dateInput.focus();
+      dateInput.click();
+    } catch {
+      // A missing native picker must not interrupt the task form.
+    }
   }
 
   const recurrenceEnabled = Boolean(draft.recurrence?.enabled);
@@ -118,9 +148,18 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
         <div className="quick-actions" aria-label="Schnelldatum">
           <button type="button" onClick={() => setQuickDate('today')}>Heute</button>
           <button type="button" onClick={() => setQuickDate('tomorrow')}>Morgen</button>
-          <button type="button" onClick={() => setQuickDate('this-week')}>Diese Woche</button>
           <button type="button" onClick={() => setQuickDate('next-week')}>Naechste Woche</button>
+          <button type="button" onClick={openDatePicker}>Datum wählen</button>
           <button type="button" onClick={() => setQuickDate('none')}>Ohne Datum</button>
+          <input
+            ref={dateInputRef}
+            className="native-date-picker"
+            type="date"
+            value={draft.dueDate}
+            onChange={(event) => setDraft((current) => ({ ...current, dueDate: event.target.value }))}
+            tabIndex={-1}
+            aria-label="Native Datumsauswahl"
+          />
         </div>
         <label>
           Liste
@@ -143,10 +182,6 @@ export function TaskForm({ task, lists, defaultDate, defaultListId, defaultFlagg
               <textarea value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} rows={3} />
             </label>
             <div className="form-grid">
-              <label>
-                Datum
-                <input type="date" value={draft.dueDate} onChange={(event) => setDraft({ ...draft, dueDate: event.target.value })} />
-              </label>
               <label>
                 Uhrzeit
                 <input type="time" value={draft.dueTime} onChange={(event) => setDraft({ ...draft, dueTime: event.target.value })} />

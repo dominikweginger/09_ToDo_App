@@ -807,6 +807,16 @@ button {
   font-weight: 800;
 }
 
+.native-date-picker {
+  position: absolute;
+  width: 1px !important;
+  min-height: 1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .details-toggle {
   width: 100%;
   min-height: 42px;

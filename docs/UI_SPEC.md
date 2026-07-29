@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Diese Spezifikation beschreibt die aktuell implementierte mobile Benutzeroberflaeche von SoloTodo V2 nach CR_004.
+Diese Spezifikation beschreibt die aktuell implementierte mobile Benutzeroberflaeche von SoloTodo V2 nach CR_005.
 
 Status: **kanonische UI-Spezifikation** (29.07.2026).
 
@@ -123,16 +123,17 @@ Felder:
 - Titel
 - Notiz
 - Liste
-- Datum
 - Uhrzeit
 - Prioritaet
 - Status
 - Markiert
 - Wiederholung mit Rhythmus und Intervall
 
-Quick Actions:
+Quick Actions in der stets sichtbaren Gruppe `Schnelldatum`:
 - Heute
 - Morgen
-- Diese Woche
 - Naechste Woche
+- Datum waehlen
 - Ohne Datum
+
+`Datum waehlen` oeffnet den nativen Date Picker auch bei geschlossenem Detailbereich. Unter `Details anzeigen` gibt es keinen zusaetzlichen Datumsblock. Die globale Smart View `Diese Woche` bleibt unveraendert.

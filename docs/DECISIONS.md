@@ -234,6 +234,20 @@ Begruendung:
 - die bestehende einfache View-Steuerung bleibt erhalten
 - Datenmodell, lokale Persistenz und Backup werden von Navigation nicht beruehrt
 
+### 22. Gemeinsame native Datumsauswahl im Aufgabenformular
+
+Entscheidung:
+- Die sichtbaren Schnelldaten im Aufgabenformular sind `Heute`, `Morgen`, `Naechste Woche`, `Datum waehlen` und `Ohne Datum`.
+- `Datum waehlen` verwendet ein stets vorhandenes, visuell verborgenes natives Date Input ohne zusaetzlichen Tabstopp.
+- Schnellaktionen und Picker-Ausloeser lesen und schreiben ausschliesslich `draft.dueDate`.
+- Das fruehere sichtbare Datumsfeld unter `Details anzeigen` entfaellt; alle anderen Detailfelder bleiben bestehen.
+- `showPicker()` ist der bevorzugte Aufruf; `focus()` und `click()` bilden den fehlergeschuetzten Fallback.
+
+Begruendung:
+- die freie Datumsauswahl bleibt auch im kompakten Formular direkt erreichbar
+- es entsteht keine zweite Datumsquelle oder Synchronisierungslogik
+- native Browserfunktionalitaet vermeidet Abhaengigkeit, eigenen Kalenderdialog und Aenderungen an Datenmodell oder Persistenz
+
 ## Offene Entscheidungen
 
 1. Hosting-Ziel der PWA
@@ -243,7 +257,7 @@ Begruendung:
 
 ## Bewusst verworfene oder verschobene Ideen
 
-Nicht im aktuellen Stand bis einschliesslich CR_004:
+Nicht im aktuellen Stand bis einschliesslich CR_005:
 - native Android-App
 - iOS-App
 - Cloud-Sync

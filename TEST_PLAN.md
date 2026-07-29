@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Der Testplan prueft den aktuellen Stand von SoloTodo V2 nach CR_004 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Checklisten-Sichtbarkeit, verlaessliche Ruecknavigation aus Listendetails, Smart Views, Backup v2 und mobile Bedienbarkeit.
+Der Testplan prueft den aktuellen Stand von SoloTodo V2 nach CR_005 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Checklisten-Sichtbarkeit, verlaessliche Ruecknavigation aus Listendetails, Datums-Schnellaktionen, Smart Views, Backup v2 und mobile Bedienbarkeit.
 
 Status: **aktuelle kanonische Test- und Smoke-Referenz** (29.07.2026).
 
@@ -15,7 +15,7 @@ npm test
 npm run build
 ```
 
-Zuletzt am 29.07.2026 ausgefuehrt: 16 Testdateien / 74 Tests bestanden; Produktionsbuild einschliesslich PWA-Service-Worker erfolgreich. Der zusaetzliche Chromium-Smoke bei `390 x 844` gegen den Produktionsbuild umfasste die drei Rueckwege, History-Bereinigung, Listenzuordnung, Filter, Task-Aktionen, Konsolenpruefung und Offline-Neuladen. Ein physisches Android-Geraet wurde nicht geprueft.
+Zuletzt am 29.07.2026 ausgefuehrt: 16 Testdateien / 81 Tests bestanden; Produktionsbuild einschliesslich PWA-Service-Worker erfolgreich. Die CR_005-Tests pruefen Sichtbarkeit und Reihenfolge der Schnelldaten, `showPicker()` und beide Fallback-Faelle, alleinigen Datumszustand, Speichern, kontrollierte Datumswerte und bestehende Aufgaben. Ein Browser-Smoke bei `1013 x 912` bestaetigte den entfernten Detail-Datumsblock, die erhaltenen Detailfelder, den weiterhin ausloesbaren nativen Picker und 0 Konsolenfehler beziehungsweise Warnungen. Ein physisches Android-Geraet wurde nicht geprueft.
 
 Abgedeckt:
 - Task-Erstellung mit Default-Liste
@@ -43,6 +43,10 @@ Abgedeckt:
 - Rueckkehr zur Listenuebersicht ueber Zurueck-Button, erneutes Tippen auf `Listen` und `popstate`
 - genau ein `pushState` je Detailoeffnung, kein weiterer Aufruf durch Re-Render und kein reaktivierbarer Detailzustand nach Hauptbereichswechsel
 - `Alle Aufgaben` bei unveraenderter Backup-Anzahl und Exportaktion
+- Aufgabenformular ohne Schnellaktion `Diese Woche`, aber mit jederzeit sichtbarem `Datum waehlen`
+- nativer Date Picker ueber `showPicker()` sowie sicherer `focus()`-/`click()`-Fallback
+- alleiniges `draft.dueDate` fuer Picker, Schnelldaten, Speichern und bestehende Aufgaben
+- unveraenderte Schnelldaten mit kontrolliertem Systemdatum
 - Backup-v2-Roundtrip, alte/ungueltige `isChecklist`-Werte und vollstaendiger Task-Export
 
 ## Smoke Tests
@@ -55,6 +59,14 @@ Abgedeckt:
 6. Aufgabe mit Titel speichern.
 7. Ohne explizite Liste landet die Aufgabe in `Allgemein`.
 8. App zeigt keine Konsolenfehler beim Start und bei den Kerninteraktionen.
+
+## Aufgabenformular und Schnelldatum
+
+- Bei geschlossenen Details sind `Heute`, `Morgen`, `Naechste Woche`, `Datum waehlen` und `Ohne Datum` in dieser Reihenfolge sichtbar; `Diese Woche` ist nur als formularbezogene Schnellaktion entfernt.
+- `Datum waehlen` oeffnen, ein Datum auswaehlen, Details ein- und ausblenden und speichern; der gewaehlte Wert bleibt erhalten.
+- Unter `Details anzeigen` wird kein zusaetzlicher Datumsblock angezeigt; Uhrzeit und die anderen Detailfelder bleiben vorhanden.
+- Picker bei bestehendem Datum abbrechen; Datum, Titel, Liste, Notiz und weitere Formularwerte bleiben unveraendert.
+- Die globale Smart View `Diese Woche` und Planung/Wochenansichten bleiben unveraendert.
 
 ## Listen
 
