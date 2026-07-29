@@ -2,9 +2,9 @@
 
 ## Ziel
 
-Der Testplan prueft den aktuellen Stand von SoloTodo V2 nach CR_003 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Checklisten-Sichtbarkeit, Smart Views, Backup v2 und mobile Bedienbarkeit.
+Der Testplan prueft den aktuellen Stand von SoloTodo V2 nach CR_004 auf lokale Datenintegritaet, Offline-Faehigkeit, Aufgabenlogik, Listen, Checklisten-Sichtbarkeit, verlaessliche Ruecknavigation aus Listendetails, Smart Views, Backup v2 und mobile Bedienbarkeit.
 
-Status: **aktuelle kanonische Test- und Smoke-Referenz** (18.07.2026).
+Status: **aktuelle kanonische Test- und Smoke-Referenz** (29.07.2026).
 
 ## Automatisierte Tests
 
@@ -15,7 +15,7 @@ npm test
 npm run build
 ```
 
-Zuletzt am 18.07.2026 ausgefuehrt: 15 Testdateien / 68 Tests bestanden; Produktionsbuild erfolgreich. Manuelle Mobile-, Persistenz- und Offline-Schritte sind davon getrennt und werden nur als erfolgreich gewertet, wenn sie tatsaechlich ausgefuehrt wurden.
+Zuletzt am 29.07.2026 ausgefuehrt: 16 Testdateien / 74 Tests bestanden; Produktionsbuild einschliesslich PWA-Service-Worker erfolgreich. Der zusaetzliche Chromium-Smoke bei `390 x 844` gegen den Produktionsbuild umfasste die drei Rueckwege, History-Bereinigung, Listenzuordnung, Filter, Task-Aktionen, Konsolenpruefung und Offline-Neuladen. Ein physisches Android-Geraet wurde nicht geprueft.
 
 Abgedeckt:
 - Task-Erstellung mit Default-Liste
@@ -39,6 +39,9 @@ Abgedeckt:
 - zentrale Checklisten-Sichtbarkeitsmatrix, mehrere Checklisten und unbekannte Listen-IDs
 - globale Smart-View-Zaehlung bei unveraenderten Listenzaehlern
 - eigene Listendetailansicht mit offenen, erledigten und markierten undatierten Checklistenaufgaben
+- sichtbarer und zugaenglicher Listendetail-Zurueck-Button mit genau einem `onBack`-Aufruf
+- Rueckkehr zur Listenuebersicht ueber Zurueck-Button, erneutes Tippen auf `Listen` und `popstate`
+- genau ein `pushState` je Detailoeffnung, kein weiterer Aufruf durch Re-Render und kein reaktivierbarer Detailzustand nach Hauptbereichswechsel
 - `Alle Aufgaben` bei unveraenderter Backup-Anzahl und Exportaktion
 - Backup-v2-Roundtrip, alte/ungueltige `isChecklist`-Werte und vollstaendiger Task-Export
 
@@ -66,6 +69,10 @@ Abgedeckt:
 - Aufgabe einer Liste zuordnen.
 - Listendetail zeigt standardmaessig offene Aufgaben.
 - Filter `Offen`, `Erledigt`, `Markiert` pruefen.
+- Listendetail ueber `Zurueck zu Listen` schliessen.
+- Listendetail erneut oeffnen und ueber den bereits aktiven Hauptnavigationseintrag `Listen` schliessen.
+- Listendetail erneut oeffnen und mit Browser-/Android-Zurueck schliessen; die Listenuebersicht muss sichtbar und die PWA geoeffnet bleiben.
+- Mehrere Listen nacheinander oeffnen und schliessen; beim Wechsel in einen anderen Hauptbereich darf kein Detail-History-Zustand aktiv bleiben.
 
 ## Smart Views
 

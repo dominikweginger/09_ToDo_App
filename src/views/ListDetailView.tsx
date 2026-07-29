@@ -1,3 +1,4 @@
+import { ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
 import { EmptyState } from '../components/EmptyState';
 import { SegmentedControl } from '../components/SegmentedControl';
@@ -11,6 +12,7 @@ type Filter = 'open' | 'done' | 'flagged';
 interface Props {
   list: TodoList;
   tasks: Task[];
+  onBack: () => void;
   onAdd: () => void;
   onToggle: (task: Task) => void;
   onEdit: (task: Task) => void;
@@ -20,7 +22,7 @@ interface Props {
   onMoveDate: (task: Task, dueDate: string | null) => void;
 }
 
-export function ListDetailView({ list, tasks, onAdd, ...actions }: Props) {
+export function ListDetailView({ list, tasks, onBack, onAdd, ...actions }: Props) {
   const [filter, setFilter] = useState<Filter>('open');
   const visibleTasks = sortListTasks(
     tasks.filter((task) => task.listId === list.id && (filter === 'open' ? task.status === 'open' : filter === 'done' ? task.status === 'done' : task.status === 'open' && task.isFlagged))
@@ -28,14 +30,20 @@ export function ListDetailView({ list, tasks, onAdd, ...actions }: Props) {
 
   return (
     <section className="view">
-      <header className="view-header row-header">
-        <div>
-          <h1>{list.name}</h1>
-          <p>{visibleTasks.length} Aufgaben in dieser Ansicht.</p>
-        </div>
-        <button type="button" className="secondary-button compact" onClick={onAdd}>
-          Aufgabe
+      <header className="view-header list-detail-header">
+        <button type="button" className="secondary-button list-detail-back" onClick={onBack} aria-label="Zurueck zu Listen">
+          <ChevronLeft size={20} aria-hidden="true" />
+          <span>Zurueck zu Listen</span>
         </button>
+        <div className="row-header">
+          <div>
+            <h1>{list.name}</h1>
+            <p>{visibleTasks.length} Aufgaben in dieser Ansicht.</p>
+          </div>
+          <button type="button" className="secondary-button compact" onClick={onAdd}>
+            Aufgabe
+          </button>
+        </div>
       </header>
       <SegmentedControl
         value={filter}

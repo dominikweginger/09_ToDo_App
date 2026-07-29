@@ -65,6 +65,20 @@ button {
   gap: 12px;
 }
 
+.list-detail-header {
+  display: grid;
+  gap: 12px;
+}
+
+.list-detail-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  gap: 6px;
+  justify-self: start;
+}
+
 .bottom-nav {
   position: fixed;
   left: 50%;

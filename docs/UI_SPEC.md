@@ -2,9 +2,9 @@
 
 ## Ziel
 
-Diese Spezifikation beschreibt die aktuell implementierte mobile Benutzeroberflaeche von SoloTodo V2 nach CR_003.
+Diese Spezifikation beschreibt die aktuell implementierte mobile Benutzeroberflaeche von SoloTodo V2 nach CR_004.
 
-Status: **kanonische UI-Spezifikation** (18.07.2026).
+Status: **kanonische UI-Spezifikation** (29.07.2026).
 
 ## Grundprinzipien
 
@@ -79,6 +79,8 @@ Beim Erstellen ist die Checkbox aus. Beim Bearbeiten sind Name und Checklistenst
 
 ## Listendetail
 
+Im Kopfbereich steht oberhalb des Listentitels der sichtbare Button `Zurueck zu Listen` mit Chevron nach links. Er ist ein echtes, tastaturbedienbares `button`-Element, besitzt einen verstaendlichen zugaenglichen Namen und verwendet mit mindestens 56 Pixeln dieselbe Mindesthoehe wie die Hauptnavigation.
+
 Zeigt Aufgaben einer Liste mit Filtern:
 
 ```text
@@ -88,6 +90,13 @@ Offen | Erledigt | Markiert
 Erledigte Aufgaben sind standardmaessig ausgeblendet.
 
 Auch undatierte Checklistenaufgaben bleiben hier in den passenden Filtern sichtbar. Der globale Checklistenfilter gilt nicht fuer die eigene Liste.
+
+Zur Listenuebersicht fuehren gleichwertig:
+- der sichtbare Zurueck-Button,
+- erneutes Tippen auf den Hauptnavigationseintrag `Listen`,
+- Browser- beziehungsweise Android-Zurueck.
+
+Ein Wechsel zu einem anderen Hauptbereich schliesst das Detail ebenfalls und hinterlaesst keinen aktiven Detail-History-Zustand.
 
 ## Mehr und Alle Aufgaben
 

@@ -1,6 +1,6 @@
 # TECHNICAL_SPEC.md
 
-Status: **aktuelle kanonische technische Spezifikation nach CR_003** (18.07.2026). Historische Execution Specs dokumentieren die jeweilige Umsetzung, sind aber nicht mehr auszufuehren.
+Status: **aktuelle kanonische technische Spezifikation nach CR_004** (29.07.2026). Historische Execution Specs dokumentieren die jeweilige Umsetzung, sind aber nicht mehr auszufuehren.
 
 ## Zielarchitektur
 
@@ -19,7 +19,7 @@ SoloTodo PWA ist eine mobile-first React/Vite/TypeScript-App. Sie laeuft vollsta
 
 ### UI Layer
 
-- `src/app/App.tsx`: zentrale View-Steuerung und Handler
+- `src/app/App.tsx`: zentrale View-Steuerung, Handler und leichter History-Zustand fuer Listendetails
 - `src/components/*`: Task-Formular, Task-Karten, Dashboard-Kacheln, Listenzeilen, Segmente
 - `src/views/*`: Dashboard, Geplant, Listen, Listendetail, Smart-View-Detail, Kalender, Mehr
 
@@ -108,6 +108,15 @@ Import:
 - `SettingsView`: filtert innerhalb seiner Props nur die Darstellung `Alle Aufgaben`; Backup-Anzahl und Exportcallback verwenden alle uebergebenen Tasks. `App.tsx` uebergibt dabei bereits den nicht archivierten Bestand.
 - `ListDetailView` und `ListsView`: verwenden bewusst keinen globalen Filter.
 - `PlannedView` und `CalendarView`: benoetigen keine Sonderlogik, weil ihre relevanten Tasks datiert sind.
+
+## Ruecknavigation aus Listendetails
+
+- `App.tsx` haelt weiterhin die View-Steuerung ohne Routing-Bibliothek und ohne sichtbare URL-Aenderung.
+- `openList(listId)` legt nur beim Wechsel von der Listenuebersicht in ein Detail einen History-Eintrag mit `solotodoSubView: 'list-detail'` und `listId` an. Vorhandene Felder aus `window.history.state` bleiben erhalten.
+- Re-Renders und ein erneuter Aufruf fuer ein bereits geoeffnetes Detail erzeugen keinen weiteren Eintrag.
+- `closeListDetail()` ist die zentrale UI-seitige Rueckkehrlogik. Zurueck-Button, erneutes Tippen auf `Listen` und der Wechsel in einen anderen Hauptbereich schliessen den React-Detailzustand und verlassen einen aktiven Detail-History-Eintrag ueber `history.back()`.
+- Ein registrierter `popstate`-Listener schliesst ein geoeffnetes Detail nach Browser- beziehungsweise Android-Zurueck und wird beim Unmount entfernt.
+- Die Navigation schreibt keine Task- oder Listenrecords und aendert weder Dexie-Schema-Version 2 noch Backup-Schema v2.
 
 ## Offline-Verhalten
 

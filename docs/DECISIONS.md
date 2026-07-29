@@ -1,6 +1,6 @@
 # docs/DECISIONS.md
 
-Status: **kanonisches Entscheidungsprotokoll** (18.07.2026). Die Entscheidungen 1 bis 20 gelten, soweit sie nicht in diesem Dokument ausdruecklich als ersetzt oder offen markiert sind.
+Status: **kanonisches Entscheidungsprotokoll** (29.07.2026). Die Entscheidungen 1 bis 21 gelten, soweit sie nicht in diesem Dokument ausdruecklich als ersetzt oder offen markiert sind.
 
 ## Getroffene Entscheidungen
 
@@ -222,6 +222,18 @@ Begruendung:
 - Das nicht indexierte Zusatzfeld erfordert weder eine neue DB-Version noch eine Task-Migration.
 - Backup-Schema v2 bleibt kompatibel; die Checklistenregel entfernt keine zusaetzlichen Aufgaben aus dem bisherigen nicht archivierten Exportumfang.
 
+### 21. Leichter History-Zustand nur fuer Listendetails
+
+Entscheidung:
+- Listendetails verwenden einen einzelnen markierten `window.history`-Eintrag statt einer Routing-Bibliothek oder neuer URLs.
+- Eine zentrale Schliessfunktion bedient den sichtbaren Zurueck-Button und die Hauptnavigation; `popstate` bedient Browser-/Android-Zurueck.
+- Wechsel in Hauptbereiche verlassen einen aktiven Detail-History-Eintrag.
+
+Begruendung:
+- alle drei verlangten Rueckwege bleiben konsistent und mobile-first
+- die bestehende einfache View-Steuerung bleibt erhalten
+- Datenmodell, lokale Persistenz und Backup werden von Navigation nicht beruehrt
+
 ## Offene Entscheidungen
 
 1. Hosting-Ziel der PWA
@@ -231,7 +243,7 @@ Begruendung:
 
 ## Bewusst verworfene oder verschobene Ideen
 
-Nicht im aktuellen Stand bis einschliesslich CR_003:
+Nicht im aktuellen Stand bis einschliesslich CR_004:
 - native Android-App
 - iOS-App
 - Cloud-Sync

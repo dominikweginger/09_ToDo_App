@@ -1,10 +1,10 @@
 # Dokumentations-Konsistenzcheck
 
-Stand: 18.07.2026
+Stand: 29.07.2026
 
 ## Ergebnis
 
-Die zentralen Projektdokumente wurden nach der abgeschlossenen CR_003-Implementierung mit dem aktuellen Code, den fokussierten Tests und dem Build abgeglichen. Der aktuelle Funktions-, Datenmodell-, Sichtbarkeits- und Backup-Stand ist in den kanonischen Quellen konsistent beschrieben.
+Die zentralen Projektdokumente wurden nach der abgeschlossenen CR_004-Implementierung mit dem aktuellen Code, den fokussierten Tests, dem Build und dem mobilen Chromium-Smoke abgeglichen. Ruecknavigation und History-Verhalten sind konsistent beschrieben; Datenmodell, Dexie-Schema und Backup-Schema bleiben unveraendert.
 
 ## Kanonische Quellen
 
@@ -22,13 +22,15 @@ Die zentralen Projektdokumente wurden nach der abgeschlossenen CR_003-Implementi
 - Die alte Navigation `Heute | Kalender | Inbox | Mehr` und Backup v1 bleiben nur im historischen `master_blueprint.md` erhalten.
 - Die aktuelle Navigation ist `Dashboard | Geplant | Listen | Mehr`; `Ohne Datum` ist eine von sieben Smart Views.
 - CR_003 ist umgesetzt, nicht mehr `zur Umsetzung freigegeben`; Execution Spec, Testreferenz und Goal-Prompt sind historische Ausfuehrungsunterlagen.
+- CR_004 ist umgesetzt: Listendetails besitzen drei konsistente Rueckwege, ohne neue Routing-Abhaengigkeit oder sichtbare URL-Aenderung.
 - Die historische Kurzform „alle Tasks im Backup“ ist fuer den UI-Flow praezisiert: Checklisten werden nicht gefiltert, archivierte Records gehoeren aber schon vor CR_003 nicht zum uebergebenen Exportbestand.
 
 ## Verifikation
 
-- `npm test`: 15 Testdateien, 68 Tests bestanden (18.07.2026)
-- `npm run build`: erfolgreich (18.07.2026)
-- kein manueller Mobile-/Offline-Smoke im Rahmen dieser Dokumentationsbereinigung behauptet
+- `npm test`: 16 Testdateien, 74 Tests bestanden (29.07.2026)
+- `npm run build`: erfolgreich einschliesslich PWA-Service-Worker (29.07.2026)
+- Chromium-Smoke gegen den Produktionsbuild bei `390 x 844`: Rueck-Button, `Listen`, Browser-Zurueck, History-Bereinigung, mehrere Listen, Listenzuordnung, Filter/Task-Aktionen, Offline-Neuladen und Konsole erfolgreich
+- nicht ausgefuehrt: physischer Android-/Installations-Smoke
 
 ## Verbleibende offene Entscheidungen
 

@@ -6,13 +6,13 @@ SoloTodo PWA
 
 ## Dokumentstatus und Kanonizitaet
 
-Status: **aktuelle kanonische Produktspezifikation nach CR_003** (18.07.2026).
+Status: **aktuelle kanonische Produktspezifikation nach CR_004** (29.07.2026).
 
 Bei Produktfragen ist dieses Dokument nach `AGENTS.md` massgeblich. Historische Anforderungen in `master_blueprint.md`, `CR_001/` und `Change_request/` erklaeren die Entstehung, ersetzen aber nicht diesen Ist-Stand.
 
 ## Produktbeschreibung
 
-SoloTodo PWA ist eine private, lokal speichernde und offlinefaehige Aufgaben-Zentrale fuer eine einzelne Person. SoloTodo V2 strukturiert die App um Dashboard, zeitliche Planung, echte Listen und berechnete Smart Views; CR_003 ergaenzt Checklisten als Listeneigenschaft.
+SoloTodo PWA ist eine private, lokal speichernde und offlinefaehige Aufgaben-Zentrale fuer eine einzelne Person. SoloTodo V2 strukturiert die App um Dashboard, zeitliche Planung, echte Listen und berechnete Smart Views; CR_003 ergaenzt Checklisten als Listeneigenschaft und CR_004 eine verlaessliche Ruecknavigation aus Listendetails.
 
 ## Projektursprung
 
@@ -86,6 +86,9 @@ SoloTodo soll als neutrale, moderne "Apple Reminders light"-PWA funktionieren, o
 - Jede Aufgabe hat eine gueltige `listId`.
 - `Allgemein` existiert automatisch und kann nicht geloescht werden.
 - Listen koennen erstellt, bearbeitet und geloescht werden.
+- Jedes Listendetail bietet den sichtbaren, tastaturbedienbaren Button `Zurueck zu Listen`.
+- Erneutes Tippen auf den Hauptnavigationseintrag `Listen` schliesst ein geoeffnetes Listendetail.
+- Browser- beziehungsweise Android-Zurueck schliesst zuerst das Listendetail und zeigt die Listenuebersicht; ein Wechsel in einen anderen Hauptbereich bereinigt den Detail-History-Zustand.
 - Eine undatierte Aufgabe in einer Checkliste erscheint nur in ihrer eigenen Liste und deren Listenzaehler; mit Datum verhaelt sie sich global normal.
 - `Allgemein` ist nie eine Checkliste, auch nicht nach Laden oder Import.
 - Der Checklistenstatus aendert keine Aufgabe und loest keine Task-Migration aus.

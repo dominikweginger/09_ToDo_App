@@ -15,6 +15,29 @@ function task(overrides: Partial<Task>): Task {
 }
 
 describe('ListDetailView checklist regression', () => {
+  it('renders the accessible back button and calls onBack exactly once', () => {
+    const onBack = vi.fn();
+    render(
+      <ListDetailView
+        list={checklist}
+        tasks={[]}
+        onBack={onBack}
+        onAdd={vi.fn()}
+        onToggle={vi.fn()}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onToggleFlag={vi.fn()}
+        onMoveSort={vi.fn()}
+        onMoveDate={vi.fn()}
+      />
+    );
+
+    const backButton = screen.getByRole('button', { name: 'Zurueck zu Listen' });
+    expect(backButton).toBeVisible();
+    fireEvent.click(backButton);
+    expect(onBack).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps undated open, done, and flagged tasks visible in their own checklist filters', () => {
     render(
       <ListDetailView
@@ -24,6 +47,7 @@ describe('ListDetailView checklist regression', () => {
           task({ id: 'done', title: 'Erledigt', status: 'done' }),
           task({ id: 'flagged', title: 'Markiert', isFlagged: true })
         ]}
+        onBack={vi.fn()}
         onAdd={vi.fn()}
         onToggle={vi.fn()}
         onEdit={vi.fn()}

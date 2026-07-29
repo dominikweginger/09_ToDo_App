@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BottomNavigation } from '../components/BottomNavigation';
 import { ListFormSheet } from '../components/ListFormSheet';
 import { TaskForm } from '../components/TaskForm';
@@ -37,6 +37,13 @@ function errorToMessage(error: unknown, fallback: string): string {
   if (isStorageError(error)) return storageErrorToUserMessage(error);
   if (error instanceof Error && !/failed to execute|domexception/i.test(error.message)) return error.message;
   return fallback;
+}
+
+const LIST_DETAIL_HISTORY_MARKER = 'list-detail';
+
+function isListDetailHistoryState(state: unknown): boolean {
+  return typeof state === 'object' && state !== null && 'solotodoSubView' in state
+    && state.solotodoSubView === LIST_DETAIL_HISTORY_MARKER;
 }
 
 export function App() {
@@ -94,6 +101,19 @@ export function App() {
   const visibleTasks = useMemo(() => tasks.filter((task) => task.status !== 'archived'), [tasks]);
   const currentList = lists.find((list) => list.id === selectedListId) ?? lists.find((list) => list.id === DEFAULT_LIST_ID);
 
+  const closeListDetail = useCallback((historyAlreadyChanged = false) => {
+    setSelectedListId(null);
+    if (!historyAlreadyChanged && isListDetailHistoryState(window.history.state)) {
+      window.history.back();
+    }
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => closeListDetail(true);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [closeListDetail]);
+
   function openCreate(defaults: FormDefaults = {}) {
     setEditingTask(null);
     setFormDefaults(defaults);
@@ -113,6 +133,15 @@ export function App() {
   }
 
   function openList(listId: string) {
+    if (selectedListId === null) {
+      const currentState = typeof window.history.state === 'object' && window.history.state !== null
+        ? window.history.state
+        : {};
+      window.history.pushState(
+        { ...currentState, solotodoSubView: LIST_DETAIL_HISTORY_MARKER, listId },
+        ''
+      );
+    }
     setSelectedListId(listId);
     setSmartView(null);
     setView('lists');
@@ -297,7 +326,14 @@ export function App() {
         <ListsView tasks={visibleTasks} lists={lists} onCreateList={handleCreateList} onEditList={handleEditList} onDeleteList={handleDeleteList} onOpenList={openList} />
       )}
       {view === 'lists' && selectedListId && currentList && (
-        <ListDetailView list={currentList} tasks={visibleTasks} onAdd={() => openCreate({ listId: currentList.id })} onMoveSort={handleMoveSort} {...taskActions} />
+        <ListDetailView
+          list={currentList}
+          tasks={visibleTasks}
+          onBack={() => closeListDetail()}
+          onAdd={() => openCreate({ listId: currentList.id })}
+          onMoveSort={handleMoveSort}
+          {...taskActions}
+        />
       )}
       {view === 'settings' && (
         <SettingsView
@@ -318,9 +354,9 @@ export function App() {
       <BottomNavigation
         activeView={view}
         onChange={(nextView) => {
+          if (selectedListId !== null) closeListDetail();
           setView(nextView);
           setSmartView(null);
-          if (nextView !== 'lists') setSelectedListId(null);
         }}
       />
       {formOpen && (
